@@ -10,6 +10,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
     public class HubDeviceClient
     {
         private readonly IMqttClient _mqttClient;
+        private readonly IManagedMqttClient _managedMqttClient;
 
         private readonly GetTwinBinder getTwinBinder;
         private readonly UpdateTwinBinder<object> updateTwinBinder;
@@ -50,10 +51,15 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                     .Build())
                 .WithAutoReconnectDelay(retryDelay)
                 .Build());
-            return new HubDeviceClient(client.InternalClient);
+            while (!client.IsConnected) await Task.Delay(100);
+            return new HubDeviceClient(client);
         }
 
-
+        public HubDeviceClient(IManagedMqttClient mClient) : this(mClient.InternalClient)
+        {
+            _managedMqttClient = mClient;
+        }
+        
         public HubDeviceClient(IMqttClient mqttClient)
         {
             _mqttClient = mqttClient;
@@ -93,5 +99,17 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                 new Utf8JsonSerializer().ToBytes(payload),
                 Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
                 false, t);
+
+        public Task EnqueTelemetryAsync(string clientId, object payload) =>
+            _managedMqttClient.EnqueueAsync(
+                new ManagedMqttApplicationMessageBuilder()
+                .WithApplicationMessage(
+                    new MqttApplicationMessageBuilder()
+                    .WithTopic($"devices/{clientId}/messages/events/")
+                    .WithPayload(new Utf8JsonSerializer().ToBytes(payload))
+                    .WithQualityOfServiceLevel(Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                    .Build())
+                .Build());
+                
     }
 }

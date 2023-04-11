@@ -10,7 +10,7 @@ namespace SampleIoTHubClient
             string hostname = "tests.azure-devices.net";
             string did = "testdevice";
             string sas = "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=";
-            var deviceClient = await HubDeviceClient.CreateClientAsync(hostname, did, sas);
+            var deviceClient = await HubDeviceClient.CreateManagedClientAsync(hostname, did, sas, TimeSpan.FromSeconds(2));
             var twin = await deviceClient.GetTwinAsync();
             await Console.Out.WriteLineAsync(twin);
 
@@ -24,7 +24,7 @@ namespace SampleIoTHubClient
 
             while (true)
             {
-                await deviceClient.SendTelemetryAsync(new { Environment.WorkingSet });
+                await deviceClient.EnqueTelemetryAsync(did, new { Environment.WorkingSet });
                 await Task.Delay(100000);
             }
         }
