@@ -9,8 +9,8 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public class HubDeviceClient
     {
-        private readonly IMqttClient _mqttClient;
-        private readonly IManagedMqttClient _managedMqttClient;
+        public readonly IMqttClient _mqttClient;
+        public readonly IManagedMqttClient _managedMqttClient;
 
         private readonly GetTwinBinder getTwinBinder;
         private readonly UpdateTwinBinder<object> updateTwinBinder;
@@ -51,8 +51,16 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                     .Build())
                 .WithAutoReconnectDelay(retryDelay)
                 .Build());
-            while (!client.IsConnected) await Task.Delay(100);
-            return new HubDeviceClient(client);
+            var tcs = new TaskCompletionSource<HubDeviceClient>();
+            client.ConnectedAsync += async e =>
+            {
+                if (client.IsConnected)
+                {
+                    tcs.SetResult(new HubDeviceClient(client));
+                }
+                await Task.Yield();
+            };
+            return await tcs.Task.TimeoutAfter(TimeSpan.FromSeconds(10));
         }
 
         public HubDeviceClient(IManagedMqttClient mClient) : this(mClient.InternalClient)
