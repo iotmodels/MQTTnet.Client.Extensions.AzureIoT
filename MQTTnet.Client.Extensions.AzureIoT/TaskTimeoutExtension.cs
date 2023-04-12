@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-
     public static class TaskTimeoutExtension
     {
         public static async Task<T> TimeoutAfter<T>(this Task<T> source, TimeSpan timeout)

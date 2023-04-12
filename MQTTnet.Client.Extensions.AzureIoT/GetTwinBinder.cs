@@ -1,9 +1,11 @@
-﻿namespace MQTTnet.Client.Extensions.AzureIoT
+﻿using System.Text.Json;
+
+namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    internal class GetTwinBinder : RequestResponseBinder<string, string>
+    internal class GetTwinBinder : RequestResponseBinder<string, JsonElement>
     {
         internal int lastRid = 0;
-        public GetTwinBinder(IMqttClient client) : base(client, string.Empty, true)
+        public GetTwinBinder(IMqttClient client) : base(client)
         {
             var rid = RidCounter.NextValue();
             lastRid = rid;
