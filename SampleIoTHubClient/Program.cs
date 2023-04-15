@@ -29,7 +29,8 @@ namespace SampleIoTHubClient
             {
                 Console.WriteLine("received prop:" + prop.ToString());
                 string? payload = prop.ToJsonString();
-                return new PropertyAck() { Status = 200, Version = prop["$version"]!.GetValue<int>(), Value = prop };
+                int version = prop["$version"]!.GetValue<int>();
+                return new PropertyAck() { Status = 200, Version = version, Value = $"updated to version {version}" };
             };
 
             await deviceClient.UpdateTwinAsync(new { DateTime.Now });

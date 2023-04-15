@@ -8,7 +8,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         public int Version { get; set; }
         public int Status { get; set; } 
         public string Description { get; set; }
-        public object Value { get; set; }
+        public string Value { get; set; }
         
         public string BuildAck()
         {
