@@ -19,24 +19,11 @@ namespace V2DeviceSample
         {
             string connectionString = _configuration.GetConnectionString("cs")!;
 
-            //var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            //await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
-            //    .WithConnectionSettings(new ConnectionSettings(connectionString))
-            //    .Build(), stoppingToken);
-            //var deviceClient = new IotHubDeviceClient(mqttClient);
+            //IotHubDeviceClient deviceClient = await ConnectAsync(connectionString, stoppingToken);
+            //IotHubDeviceClient deviceClient = await ConnectManagedClientAsync(connectionString);
 
-            var mqttClient = new MQTTnet.MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            await mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
-                    .WithClientOptions(new MQTTnet.Client.MqttClientOptionsBuilder()
-                    .WithConnectionSettings(new ConnectionSettings(connectionString))
-                    .Build())
-                .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-                .Build());
-            while (mqttClient.IsConnected == false) { await Task.Delay(100); }
-            var deviceClient = new IotHubDeviceClient(mqttClient);
-
-            //var deviceClient = new IotHubDeviceClient(connectionString);
-            //await deviceClient.OpenAsync(stoppingToken);
+            var deviceClient = new IotHubDeviceClient(connectionString);
+            await deviceClient.OpenAsync(stoppingToken);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
@@ -56,7 +43,7 @@ namespace V2DeviceSample
 
             var reportedProperties = new ReportedProperties();
             reportedProperties["started"] = Environment.WorkingSet;
-            var v = await deviceClient.UpdateReportedPropertiesAsync(reportedProperties , stoppingToken);
+            var v = await deviceClient.UpdateReportedPropertiesAsync(reportedProperties, stoppingToken);
             _logger.LogInformation("updated started to: {v}", v);
 
             twin = await deviceClient.GetTwinPropertiesAsync(stoppingToken);
@@ -66,9 +53,33 @@ namespace V2DeviceSample
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Sending Telemetry: {time}", DateTimeOffset.Now);
-                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet}), stoppingToken);
+                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet }), stoppingToken);
                 await Task.Delay(5000, stoppingToken);
             }
+        }
+
+        private static async Task<IotHubDeviceClient> ConnectManagedClientAsync(string connectionString)
+        {
+            var mqttClient = new MQTTnet.MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
+            await mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
+                    .WithClientOptions(new MQTTnet.Client.MqttClientOptionsBuilder()
+                    .WithConnectionSettings(new ConnectionSettings(connectionString))
+                    .Build())
+                .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+                .Build());
+            while (mqttClient.IsConnected == false) { await Task.Delay(100); }
+            var deviceClient = new IotHubDeviceClient(mqttClient);
+            return deviceClient;
+        }
+
+        private static async Task<IotHubDeviceClient> ConnectAsync(string connectionString, CancellationToken stoppingToken)
+        {
+            var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
+            await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
+                .WithConnectionSettings(new ConnectionSettings(connectionString))
+                .Build(), stoppingToken);
+            var deviceClient = new IotHubDeviceClient(mqttClient);
+            return deviceClient;
         }
     }
 }
