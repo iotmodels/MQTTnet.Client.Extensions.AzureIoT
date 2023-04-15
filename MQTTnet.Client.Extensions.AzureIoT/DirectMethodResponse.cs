@@ -4,11 +4,11 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public class DirectMethodResponse
     {
-        private int v;
+        public int Status { get; set; }
 
-        public DirectMethodResponse(int v)
+        public DirectMethodResponse(int status)
         {
-            this.v = v;
+            Status = status;
         }
 
         public string Payload { get; set; }

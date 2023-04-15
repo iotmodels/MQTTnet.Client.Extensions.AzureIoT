@@ -1,7 +1,4 @@
-﻿using MQTTnet.Server;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,16 +7,16 @@ namespace MQTTnet.Client.Extensions.AzureIoT
     public class IotHubDeviceClient
     {
         private readonly string _connectionString;
-        private IMqttClient _mqttClient;
+        private readonly IMqttClient _mqttClient;
 
         private GetTwinBinder _getTwinBinder;
+        private UpdateTwinBinder<object> _updateTwinBinder;
+        private DesiredUpdatePropertyBinder _desiredUpdateBinder;
         private Command _commandBinder;
         public IotHubDeviceClient(string connectionString)
         {
-
             _connectionString = connectionString;
             _mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            
         }
 
         public async Task OpenAsync(CancellationToken ct = default)
@@ -38,6 +35,8 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new Command(_mqttClient);
+            _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
+            _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
         }
 
         public async Task SetDirectMethodCallbackAsync(Func<DirectMethodRequest, Task<DirectMethodResponse>> userCallback)
@@ -47,16 +46,23 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                 var dmResp = await userCallback.Invoke(new DirectMethodRequest() { MethodName = req.CommandName, JsonPayload = req.CommandPayload });
                 CommandResponse resp = new CommandResponse()
                 {
-                    ReponsePayload = dmResp.Payload
+                    ReponsePayload = dmResp.Payload,
+                    Status = dmResp.Status,
                 };
                 return await Task.FromResult(resp);
             };
             await Task.Yield();
         }
 
-        public Task SetDesiredPropertyUpdateCallbackAsync(Func<DesiredProperties, Task> value)
+        public async Task SetDesiredPropertyUpdateCallbackAsync(Func<DesiredProperties, Task> userCallback)
         {
-            throw new NotImplementedException();
+            _desiredUpdateBinder.OnProperty_Updated = desired =>
+            {
+                
+                userCallback.Invoke(new DesiredProperties(desired));
+                return new PropertyAck() { Value = desired.ToJsonString() };
+            };
+            await Task.Yield();
         }
 
         public async Task<TwinProperties> GetTwinPropertiesAsync(CancellationToken stoppingToken = default)
@@ -72,6 +78,12 @@ namespace MQTTnet.Client.Extensions.AzureIoT
               new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
               Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
               false, t);
+        }
+
+        public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default)
+        {
+            var twin = await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties, ct);
+            return twin;
         }
     }
 }

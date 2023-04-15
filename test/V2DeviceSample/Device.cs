@@ -25,17 +25,18 @@ namespace V2DeviceSample
                 return await Task.FromResult(new DirectMethodResponse(200) { Payload = "ok response" });
             });
 
-            //await deviceClient.SetDesiredPropertyUpdateCallbackAsync(async m =>
-            //{
-            //    _logger.LogInformation("prop received {p}", m.GetSerializedString());
-            //    await Task.Yield();
-            //});
+            await deviceClient.SetDesiredPropertyUpdateCallbackAsync(async m =>
+            {
+                _logger.LogInformation("prop received {p}", m.GetSerializedString());
+                await Task.Yield();
+            });
 
             var twin = await deviceClient.GetTwinPropertiesAsync(stoppingToken);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
+            _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.GetSerializedString(), twin.Desired.GetSerializedString());
 
-            //var v = await deviceClient.UpdateReportedPropertiesAsync(new ReportedProperties() { { "started", DateTime.Now } });
-            //_logger.LogInformation("updated started to: {v}", v);
+            var v = await deviceClient.UpdateReportedPropertiesAsync(new ReportedProperties(new Dictionary<string, object>{ { "started", DateTime.Now } }), stoppingToken);
+            _logger.LogInformation("updated started to: {v}", v);
 
             twin = await deviceClient.GetTwinPropertiesAsync(stoppingToken);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
@@ -44,7 +45,7 @@ namespace V2DeviceSample
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Sending Telemetry: {time}", DateTimeOffset.Now);
-                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet}));
+                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet}), stoppingToken);
                 await Task.Delay(5000, stoppingToken);
             }
         }

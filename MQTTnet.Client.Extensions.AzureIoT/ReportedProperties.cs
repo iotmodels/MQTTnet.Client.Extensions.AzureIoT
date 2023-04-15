@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    public class ReportedProperties
+    public class ReportedProperties 
     {
         private readonly Dictionary<string, object> _properties;
         public ReportedProperties()
@@ -12,7 +13,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _properties = new Dictionary<string, object>();
         }
 
-        public ReportedProperties(Dictionary<string, object> props, bool responseFromService)
+        public ReportedProperties(Dictionary<string, object> props, bool responseFromService = false)
         {
             _properties = props;
         }
@@ -35,5 +36,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         {
             return JsonSerializer.Serialize(_properties);
         }
+
+       
     }
 }
