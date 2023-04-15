@@ -16,8 +16,16 @@ namespace V2DeviceSample
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var deviceClient = new IotHubDeviceClient(_configuration.GetConnectionString("cs"));
-            await deviceClient.OpenAsync(stoppingToken);
+            string connectionString = _configuration.GetConnectionString("cs")!;
+
+            var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
+            await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
+                .WithConnectionSettings(new ConnectionSettings(connectionString))
+                .Build(), stoppingToken);
+            var deviceClient = new IotHubDeviceClient(mqttClient);
+
+            //var deviceClient = new IotHubDeviceClient(connectionString);
+            //await deviceClient.OpenAsync(stoppingToken);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
@@ -35,7 +43,9 @@ namespace V2DeviceSample
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.GetSerializedString(), twin.Desired.GetSerializedString());
 
-            var v = await deviceClient.UpdateReportedPropertiesAsync(new ReportedProperties(new Dictionary<string, object>{ { "started", DateTime.Now } }), stoppingToken);
+            var reportedProperties = new ReportedProperties();
+            reportedProperties["started"] = Environment.WorkingSet;
+            var v = await deviceClient.UpdateReportedPropertiesAsync(reportedProperties , stoppingToken);
             _logger.LogInformation("updated started to: {v}", v);
 
             twin = await deviceClient.GetTwinPropertiesAsync(stoppingToken);

@@ -13,6 +13,16 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private UpdateTwinBinder<object> _updateTwinBinder;
         private DesiredUpdatePropertyBinder _desiredUpdateBinder;
         private Command _commandBinder;
+
+        public IotHubDeviceClient(IMqttClient mqttClient)
+        {
+            _mqttClient = mqttClient;
+            _getTwinBinder = new GetTwinBinder(_mqttClient);
+            _commandBinder = new Command(_mqttClient);
+            _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
+            _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
+        }
+
         public IotHubDeviceClient(string connectionString)
         {
             _connectionString = connectionString;
