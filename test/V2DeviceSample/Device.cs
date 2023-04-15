@@ -1,6 +1,7 @@
 //using Microsoft.Azure.Devices.Client;
 
 using MQTTnet.Client.Extensions.AzureIoT;
+using MQTTnet.Extensions.ManagedClient;
 
 namespace V2DeviceSample
 {
@@ -18,10 +19,20 @@ namespace V2DeviceSample
         {
             string connectionString = _configuration.GetConnectionString("cs")!;
 
-            var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
-                .WithConnectionSettings(new ConnectionSettings(connectionString))
-                .Build(), stoppingToken);
+            //var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
+            //await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
+            //    .WithConnectionSettings(new ConnectionSettings(connectionString))
+            //    .Build(), stoppingToken);
+            //var deviceClient = new IotHubDeviceClient(mqttClient);
+
+            var mqttClient = new MQTTnet.MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
+            await mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
+                    .WithClientOptions(new MQTTnet.Client.MqttClientOptionsBuilder()
+                    .WithConnectionSettings(new ConnectionSettings(connectionString))
+                    .Build())
+                .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+                .Build());
+            while (mqttClient.IsConnected == false) { await Task.Delay(100); }
             var deviceClient = new IotHubDeviceClient(mqttClient);
 
             //var deviceClient = new IotHubDeviceClient(connectionString);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MQTTnet.Extensions.ManagedClient;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +18,15 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         public IotHubDeviceClient(IMqttClient mqttClient)
         {
             _mqttClient = mqttClient;
+            _getTwinBinder = new GetTwinBinder(_mqttClient);
+            _commandBinder = new Command(_mqttClient);
+            _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
+            _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
+        }
+
+        public IotHubDeviceClient(IManagedMqttClient mqttClient)
+        {
+            _mqttClient = mqttClient.InternalClient;
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new Command(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
