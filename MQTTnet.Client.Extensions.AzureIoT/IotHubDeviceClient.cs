@@ -1,5 +1,6 @@
 ﻿using MQTTnet.Extensions.ManagedClient;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,8 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private DesiredUpdatePropertyBinder _desiredUpdateBinder;
         private Command _commandBinder;
 
+        public Action<ConnectionStatusInfo> ConnectionStatusChangeCallback { get; set; }
+
         public IotHubDeviceClient(IMqttClient mqttClient)
         {
             _mqttClient = mqttClient;
@@ -22,36 +25,43 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _commandBinder = new Command(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
             _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
+            _mqttClient.ConnectedAsync += async c =>
+            {
+                ConnectionStatusChangeCallback?.Invoke(new ConnectionStatusInfo()
+                {
+                    ChangeReason = c.ConnectResult.ResultCode.ToConnectionStatusChangeReason(),
+                    Status = c.ConnectResult.ResultCode.ToConnectionStatus()
+
+                }); ;
+                await Task.Yield();
+            };
+            _mqttClient.DisconnectedAsync += async d =>
+            {
+
+                ConnectionStatusChangeCallback?.Invoke(new ConnectionStatusInfo()
+                {
+                    ChangeReason = d.ConnectResult == null ? 
+                        ConnectionStatusChangeReason.DeviceDisabled : 
+                        d.ConnectResult.ResultCode.ToConnectionStatusChangeReason() ,
+                    Status = d.ConnectResult == null ?
+                        ConnectionStatus.Disconnected :
+                        d.ConnectResult.ResultCode.ToConnectionStatus()
+                }) ;
+                await Task.Yield();
+            };
         }
 
-        public IotHubDeviceClient(IManagedMqttClient mqttClient)
-        {
-            _mqttClient = mqttClient.InternalClient;
-            _getTwinBinder = new GetTwinBinder(_mqttClient);
-            _commandBinder = new Command(_mqttClient);
-            _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
-            _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
-        }
+        public IotHubDeviceClient(IManagedMqttClient mqttClient) : this(mqttClient.InternalClient){ }
 
-        public IotHubDeviceClient(string connectionString)
+        public IotHubDeviceClient(string connectionString) : this(new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger()))
         {
             _connectionString = connectionString;
-            _mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
         }
 
         public async Task OpenAsync(CancellationToken ct = default)
         {
             var cs = new ConnectionSettings(_connectionString);
-            await _mqttClient.ConnectAsync(
-                new MqttClientOptionsBuilder()
-                .WithTcpServer(cs.HostName, cs.TcpPort)
-                .WithCredentials(new SasCredentials(cs.HostName, cs.DeviceId, cs.SharedAccessKey))
-                .WithClientId(cs.DeviceId)
-                .WithTls(new MqttClientOptionsBuilderTlsParameters()
-                {
-                    UseTls = true
-                })
-                .Build(), ct);
+            await _mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build(), ct);
 
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new Command(_mqttClient);
@@ -59,7 +69,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
         }
 
-        public async Task SetDirectMethodCallbackAsync(Func<DirectMethodRequest, Task<DirectMethodResponse>> userCallback)
+        public async Task SetDirectMethodCallbackAsync(Func<DirectMethodRequest, Task<DirectMethodResponse>> userCallback, CancellationToken ct = default)
         {
             _commandBinder.OnCmdDelegate = async req =>
             {
@@ -74,7 +84,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             await Task.Yield();
         }
 
-        public async Task SetDesiredPropertyUpdateCallbackAsync(Func<DesiredProperties, Task> userCallback)
+        public async Task SetDesiredPropertyUpdateCallbackAsync(Func<DesiredProperties, Task> userCallback, CancellationToken ct = default)
         {
             _desiredUpdateBinder.OnProperty_Updated = desired =>
             {
@@ -94,10 +104,17 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default)
         {
-            await _mqttClient.PublishBinaryAsync($"devices/{_mqttClient.Options.ClientId}/messages/events/",
-              new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
-              Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
-              false, t);
+            if (_mqttClient.IsConnected)
+            {
+                await _mqttClient.PublishBinaryAsync($"devices/{_mqttClient.Options.ClientId}/messages/events/",
+                  new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
+                  Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
+                  false, t);
+            }
+            else
+            {
+                Trace.TraceWarning("Telemetry lost");
+            }
         }
 
         public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default)

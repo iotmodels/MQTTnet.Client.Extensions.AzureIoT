@@ -6,7 +6,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public static partial class MqttNetExtensions
     {
-        public static MqttClientOptionsBuilder WithConnectionSettings(this MqttClientOptionsBuilder builder, ConnectionSettings cs, bool withLWT = false)
+        public static MqttClientOptionsBuilder WithConnectionSettings(this MqttClientOptionsBuilder builder, ConnectionSettings cs)
         {
             builder
                 .WithTcpServer(cs.HostName, cs.TcpPort)

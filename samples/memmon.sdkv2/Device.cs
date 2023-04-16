@@ -1,10 +1,4 @@
-//using Microsoft.Azure.Devices.Client;
-//using MQTTnet.Client.Extensions.AzureIoT;
-using MQTTnet.Extensions.ManagedClient;
-
-//using MQTTnet.Client.Extensions.AzureIoT;
-
-namespace V2DeviceSample
+namespace memmon.device
 {
     public class Device : BackgroundService
     {
@@ -20,23 +14,19 @@ namespace V2DeviceSample
         {
             string connectionString = _configuration.GetConnectionString("cs")!;
 
-            //IotHubDeviceClient deviceClient = await ConnectAsync(connectionString, stoppingToken);
-            //IotHubDeviceClient deviceClient = await ConnectManagedClientAsync(connectionString);
-
-            var deviceClient = new IotHubDeviceClient(connectionString);
-            await deviceClient.OpenAsync(stoppingToken);
+            var deviceClient = await Program.CreateFromConnectionStringAsync(connectionString, _logger);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
                 _logger.LogInformation("Cmd received: {c} with payload {p}", m.MethodName, m.GetPayloadAsJsonString());
                 return await Task.FromResult(new DirectMethodResponse(200) { Payload = "ok response" });
-            });
+            }, stoppingToken);
 
             await deviceClient.SetDesiredPropertyUpdateCallbackAsync(async m =>
             {
                 _logger.LogInformation("prop received {p}", m.GetSerializedString());
                 await Task.Yield();
-            });
+            }, stoppingToken);
 
             var twin = await deviceClient.GetTwinPropertiesAsync(stoppingToken);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
@@ -58,29 +48,5 @@ namespace V2DeviceSample
                 await Task.Delay(5000, stoppingToken);
             }
         }
-
-        //private static async Task<IotHubDeviceClient> ConnectManagedClientAsync(string connectionString)
-        //{
-        //    var mqttClient = new MQTTnet.MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-        //    await mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
-        //            .WithClientOptions(new MQTTnet.Client.MqttClientOptionsBuilder()
-        //            .WithConnectionSettings(new ConnectionSettings(connectionString))
-        //            .Build())
-        //        .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
-        //        .Build());
-        //    while (mqttClient.IsConnected == false) { await Task.Delay(100); }
-        //    var deviceClient = new IotHubDeviceClient(mqttClient);
-        //    return deviceClient;
-        //}
-
-        //private static async Task<IotHubDeviceClient> ConnectAsync(string connectionString, CancellationToken stoppingToken)
-        //{
-        //    var mqttClient = new MQTTnet.MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-        //    await mqttClient.ConnectAsync(new MQTTnet.Client.MqttClientOptionsBuilder()
-        //        .WithConnectionSettings(new ConnectionSettings(connectionString))
-        //        .Build(), stoppingToken);
-        //    var deviceClient = new IotHubDeviceClient(mqttClient);
-        //    return deviceClient;
-        //}
     }
 }
