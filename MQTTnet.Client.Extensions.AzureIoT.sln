@@ -5,8 +5,6 @@ VisualStudioVersion = 17.6.33513.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MQTTnet.Client.Extensions.AzureIoT", "MQTTnet.Client.Extensions.AzureIoT\MQTTnet.Client.Extensions.AzureIoT.csproj", "{51CB8FDE-C4E2-48AD-AFAE-E00291082F48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleIoTHubClient", "SampleIoTHubClient\SampleIoTHubClient.csproj", "{E37672DF-A668-4C24-B779-3AD363F1AD4F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdkv2", "samples\memmon.sdkv2\memmon.sdkv2.csproj", "{4D7454B4-92FF-4E50-A932-134D9FB9E9D9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdklite", "samples\memmon.sdklite\memmon.sdklite.csproj", "{09DBC282-88AC-4A56-885A-C30747C5C61D}"
@@ -21,10 +19,6 @@ Global
 		{51CB8FDE-C4E2-48AD-AFAE-E00291082F48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{51CB8FDE-C4E2-48AD-AFAE-E00291082F48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{51CB8FDE-C4E2-48AD-AFAE-E00291082F48}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E37672DF-A668-4C24-B779-3AD363F1AD4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E37672DF-A668-4C24-B779-3AD363F1AD4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E37672DF-A668-4C24-B779-3AD363F1AD4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E37672DF-A668-4C24-B779-3AD363F1AD4F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4D7454B4-92FF-4E50-A932-134D9FB9E9D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D7454B4-92FF-4E50-A932-134D9FB9E9D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D7454B4-92FF-4E50-A932-134D9FB9E9D9}.Release|Any CPU.ActiveCfg = Release|Any CPU

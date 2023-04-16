@@ -54,7 +54,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                                 break;
                             }
                             break;
-
+                        
                         default:
                             _properties.Add(el.Name, el.Value);
                             break;

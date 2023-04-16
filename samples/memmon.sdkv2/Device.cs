@@ -1,3 +1,7 @@
+using Microsoft.Extensions.Logging;
+using MQTTnet.Client;
+using MQTTnet;
+
 namespace memmon.device
 {
     public class Device : BackgroundService
