@@ -10,6 +10,8 @@ namespace MQTTnet.Client.Extensions.AzureIoT
     {
         private readonly string _connectionString;
         private readonly IMqttClient _mqttClient;
+        private readonly IManagedMqttClient _managedMqttClient = null;
+        private bool _telemetryQueueEnabled = false;
 
         private GetTwinBinder _getTwinBinder;
         private UpdateTwinBinder<object> _updateTwinBinder;
@@ -51,7 +53,11 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             };
         }
 
-        public IotHubDeviceClient(IManagedMqttClient mqttClient) : this(mqttClient.InternalClient){ }
+        public IotHubDeviceClient(IManagedMqttClient mqttClient) : this(mqttClient.InternalClient)
+        {
+            _telemetryQueueEnabled = true;
+            _managedMqttClient = mqttClient;
+        }
 
         public IotHubDeviceClient(string connectionString) : this(new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger()))
         {
@@ -104,16 +110,29 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default)
         {
-            if (_mqttClient.IsConnected)
+            if (_telemetryQueueEnabled)
             {
-                await _mqttClient.PublishBinaryAsync($"devices/{_mqttClient.Options.ClientId}/messages/events/",
-                  new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
-                  Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
-                  false, t);
+                await _managedMqttClient.EnqueueAsync(
+                    new ManagedMqttApplicationMessageBuilder()
+                    .WithApplicationMessage(new MqttApplicationMessageBuilder()
+                        .WithTopic($"devices/{_mqttClient.Options.ClientId}/messages/events/")
+                        .WithPayload(new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload))
+                        .Build())
+                    .Build());
             }
             else
             {
-                Trace.TraceWarning("Telemetry lost");
+                if (_mqttClient.IsConnected)
+                {
+                    await _mqttClient.PublishBinaryAsync($"devices/{_mqttClient.Options.ClientId}/messages/events/",
+                      new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
+                      Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
+                      false, t);
+                }
+                else
+                {
+                    Trace.TraceWarning("Telemetry lost");
+                }
             }
         }
 

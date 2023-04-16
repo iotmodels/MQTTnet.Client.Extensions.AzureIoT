@@ -14,7 +14,7 @@ namespace memmon.device
         {
             string connectionString = _configuration.GetConnectionString("cs")!;
 
-            var deviceClient = await Program.CreateFromConnectionStringAsync(connectionString, _logger);
+            var deviceClient = await ClientFactory.CreateFromConnectionStringAsync(connectionString, _logger);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
@@ -41,11 +41,12 @@ namespace memmon.device
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.GetSerializedString(), twin.Desired.GetSerializedString());
 
+            int counter = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Sending Telemetry: {time}", DateTimeOffset.Now);
+                _logger.LogInformation("Sending Telemetry: {c}", counter++);
                 await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet }), stoppingToken);
-                await Task.Delay(5000, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

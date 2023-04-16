@@ -1,6 +1,7 @@
 using memmon.device;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Extensions.ManagedClient;
 
 namespace memmon.sdklite
 {
@@ -18,25 +19,6 @@ namespace memmon.sdklite
             host.Run();
         }
 
-        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync0(string connectionString, ILogger logger) 
-        {
-            var client = new IotHubDeviceClient(connectionString)
-            {
-                ConnectionStatusChangeCallback = c => logger.LogWarning("Connection status changed: {s}", c.Status)
-            };
-            await client.OpenAsync();
-            return client;
-        }
-
-        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync(string connectionString, ILogger logger)
-        {
-            var mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(new ConnectionSettings(connectionString)).Build());
-            var client = new IotHubDeviceClient(mqttClient)
-            {
-                ConnectionStatusChangeCallback = c => logger.LogWarning("Connection status changed: {s}", c.Status)
-            };
-            return client;
-        }
+       
     }
 }
