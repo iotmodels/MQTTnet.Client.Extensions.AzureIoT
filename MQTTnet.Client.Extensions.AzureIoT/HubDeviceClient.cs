@@ -15,8 +15,25 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private readonly GetTwinBinder getTwinBinder;
         private readonly UpdateTwinBinder<object> updateTwinBinder;
 
-        private readonly GenericDesiredUpdatePropertyBinder genericDesiredUpdateProperty;
+        private readonly DesiredUpdatePropertyBinder genericDesiredUpdateProperty;
         private readonly Command command;
+
+       
+
+        public HubDeviceClient(IManagedMqttClient mClient) : this(mClient.InternalClient)
+        {
+            _managedMqttClient = mClient;
+        }
+        
+        public HubDeviceClient(IMqttClient mqttClient)
+        {
+            _mqttClient = mqttClient;
+
+            getTwinBinder = new GetTwinBinder(mqttClient);
+            updateTwinBinder = new UpdateTwinBinder<object>(mqttClient);
+            command = new Command(mqttClient);
+            genericDesiredUpdateProperty = new DesiredUpdatePropertyBinder(mqttClient, updateTwinBinder);
+        }
 
         public static async Task<HubDeviceClient> CreateClientAsync(string hostname, string deviceId, string sasKey)
         {
@@ -56,26 +73,11 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             {
                 if (client.IsConnected)
                 {
-                    tcs.SetResult(new HubDeviceClient(client));
+                    tcs.TrySetResult(new HubDeviceClient(client));
                 }
                 await Task.Yield();
             };
             return await tcs.Task.TimeoutAfter(TimeSpan.FromSeconds(10));
-        }
-
-        public HubDeviceClient(IManagedMqttClient mClient) : this(mClient.InternalClient)
-        {
-            _managedMqttClient = mClient;
-        }
-        
-        public HubDeviceClient(IMqttClient mqttClient)
-        {
-            _mqttClient = mqttClient;
-
-            getTwinBinder = new GetTwinBinder(mqttClient);
-            updateTwinBinder = new UpdateTwinBinder<object>(mqttClient);
-            command = new Command(mqttClient);
-            genericDesiredUpdateProperty = new GenericDesiredUpdatePropertyBinder(mqttClient, updateTwinBinder);
         }
 
         public Func<CommandRequest, Task<CommandResponse>> OnCommandReceived
@@ -84,7 +86,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             set => command.OnCmdDelegate = value;
         }
 
-        public Func<JsonNode, GenericPropertyAck> OnPropertyUpdateReceived
+        public Func<JsonNode, PropertyAck> OnPropertyUpdateReceived
         {
             get => genericDesiredUpdateProperty.OnProperty_Updated;
             set => genericDesiredUpdateProperty.OnProperty_Updated = value;
@@ -98,7 +100,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public async Task<int> UpdateTwinAsync(object payload, CancellationToken cancellationToken = default)
         {
-            var twin = await updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, JsonSerializer.Serialize(payload), cancellationToken);
+            var twin = await updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, payload, cancellationToken);
             return twin;
         }
 

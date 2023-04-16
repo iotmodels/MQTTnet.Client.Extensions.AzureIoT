@@ -1,17 +1,12 @@
-﻿using MQTTnet.Client;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-
-
-
     public class RequestResponseBinder<T, TResp>
     {
         readonly IMqttClient mqttClient;
-        readonly string commandName;
         TaskCompletionSource<TResp> tcs;
 
         protected string requestTopicPattern = "device/{clientId}/commands/{commandName}";
@@ -20,29 +15,26 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         protected string responseTopicFailure = "device/{clientId}/commands/{commandName}/err";
         protected bool requireNotEmptyPayload = true;
         string remoteClientId = string.Empty;
-        readonly bool _unwrap = true;
         Guid corr = Guid.NewGuid();
 
         protected Func<string, TResp> VersionExtractor { get; set; }
 
         readonly IMessageSerializer _serializer;
 
-        public RequestResponseBinder(IMqttClient client, string name, bool unwrap)
-            : this(client, name, unwrap, new Utf8JsonSerializer())
+        public RequestResponseBinder(IMqttClient client)
+            : this(client, new Utf8JsonSerializer())
         {
 
         }
 
-        public RequestResponseBinder(IMqttClient client, string name, bool unwrap, IMessageSerializer serializer)
+        public RequestResponseBinder(IMqttClient client, IMessageSerializer serializer)
         {
             mqttClient = client;
-            commandName = name;
             _serializer = serializer;
-            _unwrap = unwrap;
             mqttClient.ApplicationMessageReceivedAsync += async m =>
             {
                 var topic = m.ApplicationMessage.Topic;
-                var expectedTopic = responseTopicSuccess.Replace("{clientId}", remoteClientId).Replace("{commandName}", commandName);
+                var expectedTopic = responseTopicSuccess.Replace("{clientId}", remoteClientId);
                 if (topic.StartsWith(expectedTopic))
                 {
                     if (m.ApplicationMessage.CorrelationData != null && corr != new Guid(m.ApplicationMessage.CorrelationData))
@@ -52,7 +44,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
                     if (requireNotEmptyPayload)
                     {
-                        if (_serializer.TryReadFromBytes(m.ApplicationMessage.Payload, _unwrap ? name : string.Empty, out TResp resp))
+                        if (_serializer.TryReadFromBytes(m.ApplicationMessage.Payload, out TResp resp))
                         {
                             tcs.SetResult(resp);
                         }
@@ -68,6 +60,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                         tcs.SetResult(resp);
                     }
                 }
+
                 await Task.Yield();
             };
         }
@@ -75,15 +68,15 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         {
             tcs = new TaskCompletionSource<TResp>();
             remoteClientId = clientId;
-            string commandTopic = requestTopicPattern.Replace("{clientId}", remoteClientId).Replace("{commandName}", commandName);
-            var responseTopic = responseTopicSub.Replace("{clientId}", remoteClientId).Replace("{commandName}", commandName);
+            string commandTopic = requestTopicPattern.Replace("{clientId}", remoteClientId);
+            var responseTopic = responseTopicSub.Replace("{clientId}", remoteClientId);
             await mqttClient.SubscribeAsync(responseTopic, Protocol.MqttQualityOfServiceLevel.AtMostOnce, ct);
 
             MqttApplicationMessage msg = new MqttApplicationMessage()
             {
                 Topic = commandTopic,
                 Payload = _serializer.ToBytes(request),
-                ResponseTopic = responseTopicSuccess.Replace("{clientId}", remoteClientId).Replace("{commandName}", commandName),
+                ResponseTopic = responseTopicSuccess.Replace("{clientId}", remoteClientId),
                 CorrelationData = corr.ToByteArray()
             };
             var pubAck = await mqttClient.PublishAsync(msg);

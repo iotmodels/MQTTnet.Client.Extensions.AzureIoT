@@ -1,16 +1,17 @@
 ﻿using MQTTnet.Client;
 using System;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    public class GenericDesiredUpdatePropertyBinder
+    public class DesiredUpdatePropertyBinder
     {
         private readonly IMqttClient connection;
-        public Func<JsonNode, GenericPropertyAck> OnProperty_Updated = null;
-        public GenericDesiredUpdatePropertyBinder(IMqttClient c, UpdateTwinBinder<object> updTwinBinder)
+        public Func<JsonNode, PropertyAck> OnProperty_Updated = null;
+        public DesiredUpdatePropertyBinder(IMqttClient c, UpdateTwinBinder<object> updTwinBinder)
         {
             connection = c;
             _ = connection.SubscribeAsync("$iothub/twin/PATCH/properties/desired/#");

@@ -3,9 +3,9 @@ using System.Web;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    public class UpdateTwinBinder<T> : RequestResponseBinder<T, int>
+    public class UpdateTwinBinder<T> : RequestResponseBinder<object, int>
     {
-        public UpdateTwinBinder(IMqttClient c) : base(c, string.Empty, true)
+        public UpdateTwinBinder(IMqttClient c) : base(c)
         {
             var rid = RidCounter.NextValue();
             requestTopicPattern = $"$iothub/twin/PATCH/properties/reported/?$rid={rid}";
@@ -18,11 +18,9 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                 int twinVersion = -1;
                 if (topic.Contains("?"))
                 {
-                    var qs = HttpUtility.ParseQueryString(segments[segments.Length]);
-                    if (int.TryParse(qs["$version"], out int v))
-                    {
-                        twinVersion = v;
-                    }
+                    var tp = TopicParser.ParseTopic(topic);
+                    twinVersion = tp.Version;
+                    
                 }
                 return twinVersion;
             };

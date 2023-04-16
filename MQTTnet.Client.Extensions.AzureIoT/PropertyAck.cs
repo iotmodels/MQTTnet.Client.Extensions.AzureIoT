@@ -3,13 +3,13 @@ using System.Text.Json;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    public class GenericPropertyAck
+    public class PropertyAck
     {
         public int Version { get; set; }
-        public int Status { get; set; }
+        public int Status { get; set; } 
         public string Description { get; set; }
         public string Value { get; set; }
-
+        
         public string BuildAck()
         {
             using (MemoryStream ms = new MemoryStream())
@@ -56,6 +56,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                         //writer.WriteEndObject();
                         writer.WriteEndObject();
                         writer.Flush();
+
                         ms.Position = 0;
                         using (StreamReader sr = new StreamReader(ms))
                         {
