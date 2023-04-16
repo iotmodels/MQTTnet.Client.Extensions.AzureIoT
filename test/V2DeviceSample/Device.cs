@@ -1,7 +1,8 @@
 //using Microsoft.Azure.Devices.Client;
-
 using MQTTnet.Client.Extensions.AzureIoT;
 using MQTTnet.Extensions.ManagedClient;
+
+//using MQTTnet.Client.Extensions.AzureIoT;
 
 namespace V2DeviceSample
 {
@@ -20,10 +21,10 @@ namespace V2DeviceSample
             string connectionString = _configuration.GetConnectionString("cs")!;
 
             //IotHubDeviceClient deviceClient = await ConnectAsync(connectionString, stoppingToken);
-            //IotHubDeviceClient deviceClient = await ConnectManagedClientAsync(connectionString);
+            IotHubDeviceClient deviceClient = await ConnectManagedClientAsync(connectionString);
 
-            var deviceClient = new IotHubDeviceClient(connectionString);
-            await deviceClient.OpenAsync(stoppingToken);
+            //var deviceClient = new IotHubDeviceClient(connectionString);
+            //await deviceClient.OpenAsync(stoppingToken);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
