@@ -11,7 +11,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private readonly string _connectionString;
         private readonly IMqttClient _mqttClient;
         private readonly IManagedMqttClient _managedMqttClient = null;
-        private bool _telemetryQueueEnabled = false;
+        private readonly bool _telemetryQueueEnabled = false;
 
         private GetTwinBinder _getTwinBinder;
         private UpdateTwinBinder<object> _updateTwinBinder;

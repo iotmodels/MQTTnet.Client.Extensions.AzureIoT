@@ -33,6 +33,7 @@ namespace memmon.sdklite
             var mqttClient = new MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
             mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
                 .WithClientOptions(new MqttClientOptionsBuilder().WithConnectionSettings(new ConnectionSettings(connectionString)).Build())
+                .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                 .Build()).Wait();
 
             var tcs = new TaskCompletionSource<IotHubDeviceClient>();
