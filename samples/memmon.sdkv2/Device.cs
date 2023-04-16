@@ -33,7 +33,7 @@ namespace memmon.device
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.GetSerializedString(), twin.Desired.GetSerializedString());
 
             var reportedProperties = new ReportedProperties();
-            reportedProperties["started"] = Environment.WorkingSet;
+            reportedProperties["started"] = DateTime.UtcNow;
             var v = await deviceClient.UpdateReportedPropertiesAsync(reportedProperties, stoppingToken);
             _logger.LogInformation("updated started to: {v}", v);
 
@@ -45,8 +45,8 @@ namespace memmon.device
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Sending Telemetry: {c}", counter++);
-                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { Environment.WorkingSet }), stoppingToken);
-                await Task.Delay(60000, stoppingToken);
+                await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { counter, Environment.WorkingSet }), stoppingToken);
+                await Task.Delay(1000, stoppingToken);
             }
         }
     }

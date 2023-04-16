@@ -2,12 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public class ReportedProperties 
     {
-        private readonly Dictionary<string, object> _properties;
+        public Dictionary<string, object> _properties { get; set; }
         public ReportedProperties()
         {
             _properties = new Dictionary<string, object>();
@@ -18,6 +19,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _properties = props;
         }
 
+        [JsonPropertyName("$version")]
         public long Version { get; set; }
 
         public object this[string propertyKey]

@@ -138,7 +138,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default)
         {
-            var twin = await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties, ct);
+            var twin = await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties._properties, ct);
             return twin;
         }
     }
