@@ -1,6 +1,4 @@
-﻿//using Microsoft.Azure.Devices.Client;
-
-namespace MQTTnet.Client.Extensions.AzureIoT
+﻿namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public class DirectMethodResponse
     {

@@ -1,11 +1,10 @@
-﻿using MQTTnet.Client;
-using System;
+﻿using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class DesiredUpdatePropertyBinder
     {

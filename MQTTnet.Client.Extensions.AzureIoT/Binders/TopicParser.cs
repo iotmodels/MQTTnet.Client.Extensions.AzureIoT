@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class TopicParser
     {
@@ -12,7 +12,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             string rid = string.Empty;
             if (topic.Contains("?"))
             {
-                var qs = HttpUtility.ParseQueryString(segments[segments.Length-1]);
+                var qs = HttpUtility.ParseQueryString(segments[segments.Length - 1]);
                 if (int.TryParse(qs["$version"], out int v))
                 {
                     twinVersion = v;

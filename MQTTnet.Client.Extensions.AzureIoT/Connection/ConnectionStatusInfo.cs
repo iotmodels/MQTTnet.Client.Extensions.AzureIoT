@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Connection
 {
     public enum ConnectionStatus
     {
-        
+
         Disconnected,
         Connected,
         DisconnectedRetrying,
@@ -62,7 +62,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
     public class ConnectionStatusInfo
     {
-        public ConnectionStatus Status { get; set;  }
+        public ConnectionStatus Status { get; set; }
         public ConnectionStatusChangeReason ChangeReason { get; set; }
         public DateTimeOffset StatusLastChangedOnUtc { get; set; }
     }

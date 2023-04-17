@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class RequestResponseBinder<T, TResp>
     {
@@ -44,14 +45,8 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
                     if (requireNotEmptyPayload)
                     {
-                        if (_serializer.TryReadFromBytes(m.ApplicationMessage.Payload, out TResp resp))
-                        {
-                            tcs.SetResult(resp);
-                        }
-                        else
-                        {
-                            tcs.SetException(new ApplicationException("Cannot deserialize bytes"));
-                        }
+                        TResp resp = _serializer.FromBytes<TResp>(m.ApplicationMessage.Payload);
+                        tcs.SetResult(resp);
                     }
                     else
                     {

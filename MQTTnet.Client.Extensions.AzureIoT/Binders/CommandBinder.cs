@@ -1,16 +1,15 @@
-﻿using MQTTnet.Client;
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
-    public class Command
+    public class CommandBinder
     {
         private readonly IMqttClient connection;
         public Func<CommandRequest, Task<CommandResponse>> OnCmdDelegate { get; set; }
 
-        public Command(IMqttClient c)
+        public CommandBinder(IMqttClient c)
         {
             connection = c;
             _ = connection.SubscribeAsync("$iothub/methods/POST/#");

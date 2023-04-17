@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     internal class GetTwinBinder : RequestResponseBinder<string, JsonElement>
     {
