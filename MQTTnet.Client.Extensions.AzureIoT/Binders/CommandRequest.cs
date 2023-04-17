@@ -1,4 +1,4 @@
-﻿namespace MQTTnet.Client.Extensions.AzureIoT
+﻿namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class CommandRequest
     {

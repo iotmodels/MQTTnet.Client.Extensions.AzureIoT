@@ -1,12 +1,14 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Client.Extensions.AzureIoT.Binders;
+using MQTTnet.Client.Extensions.AzureIoT.Connection;
 using MQTTnet.Extensions.ManagedClient;
 
 namespace memmon.sdklite
 {
     internal static class ClientFactory
     {
-        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync0(string connectionString, ILogger logger)
+        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync(string connectionString, ILogger logger)
         {
             var client = new IotHubDeviceClient(connectionString)
             {
@@ -46,7 +48,7 @@ namespace memmon.sdklite
         }
 
 
-        public static Task<IotHubDeviceClient> CreateFromConnectionStringAsync(string connectionString, ILogger logger)
+        public static Task<IotHubDeviceClient> CreateFromConnectionStringAsync2(string connectionString, ILogger logger)
         {
             var mqttClient = new MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
             var tcs = new TaskCompletionSource<IotHubDeviceClient>();

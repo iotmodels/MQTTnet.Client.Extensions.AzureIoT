@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public static class TaskTimeoutExtension
     {

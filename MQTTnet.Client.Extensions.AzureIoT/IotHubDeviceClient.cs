@@ -1,6 +1,7 @@
-﻿using MQTTnet.Extensions.ManagedClient;
+﻿using MQTTnet.Client.Extensions.AzureIoT.Binders;
+using MQTTnet.Client.Extensions.AzureIoT.Connection;
+using MQTTnet.Extensions.ManagedClient;
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,13 +12,12 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private readonly string _connectionString;
         private readonly IMqttClient _mqttClient;
         private readonly IManagedMqttClient _managedMqttClient = null;
-        private readonly bool _telemetryQueueEnabled = false;
 
         private TelemetryBinder _telemetryBinder;
         private GetTwinBinder _getTwinBinder;
         private UpdateTwinBinder<object> _updateTwinBinder;
         private DesiredUpdatePropertyBinder _desiredUpdateBinder;
-        private Command _commandBinder;
+        private CommandBinder _commandBinder;
 
         public Action<ConnectionStatusInfo> ConnectionStatusChangeCallback { get; set; }
 
@@ -26,7 +26,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _mqttClient = mqttClient;
             _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
-            _commandBinder = new Command(_mqttClient);
+            _commandBinder = new CommandBinder(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
             _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
             _mqttClient.ConnectedAsync += async c =>
@@ -57,7 +57,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public IotHubDeviceClient(IManagedMqttClient mqttClient) : this(mqttClient.InternalClient)
         {
-            _telemetryQueueEnabled = true;
             _managedMqttClient = mqttClient;
             _telemetryBinder = new TelemetryBinder(_managedMqttClient);
         }
@@ -73,7 +72,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             await _mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build(), ct);
             _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
-            _commandBinder = new Command(_mqttClient);
+            _commandBinder = new CommandBinder(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
             _desiredUpdateBinder = new DesiredUpdatePropertyBinder(_mqttClient, _updateTwinBinder);
         }

@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
-    public class CommandResponse 
+    public class CommandResponse
     {
         [JsonIgnore]
         public int Status { get; set; }

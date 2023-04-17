@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Connection
 {
     public class SasCredentials : IMqttClientCredentialsProvider
     {
@@ -20,16 +20,16 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _modelId = modelId;
             _sasMinutes = sasMinutes;
         }
-        public byte[] GetPassword(MqttClientOptions clientOptions) => 
+        public byte[] GetPassword(MqttClientOptions clientOptions) =>
             Encoding.UTF8.GetBytes(CreateSasToken($"{_hostname}/devices/{_did}", _sasKey));
 
-        public string GetUserName(MqttClientOptions clientOptions) => 
+        public string GetUserName(MqttClientOptions clientOptions) =>
             $"{_hostname}/{_did}/?api-version={apiversion_2020_09_30}&model-id={_modelId}";
 
         internal string Sign(string requestString, string key)
         {
             using (HMACSHA256 algorithm = new HMACSHA256(Convert.FromBase64String(key)))
-            { 
+            {
                 return Convert.ToBase64String(algorithm.ComputeHash(Encoding.UTF8.GetBytes(requestString)));
             }
         }

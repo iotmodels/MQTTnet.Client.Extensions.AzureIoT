@@ -1,7 +1,4 @@
-﻿using MQTTnet.Client;
-using System.Web;
-
-namespace MQTTnet.Client.Extensions.AzureIoT
+﻿namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class UpdateTwinBinder<T> : RequestResponseBinder<object, int>
     {
@@ -20,7 +17,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                 {
                     var tp = TopicParser.ParseTopic(topic);
                     twinVersion = tp.Version;
-                    
+
                 }
                 return twinVersion;
             };

@@ -1,15 +1,15 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace MQTTnet.Client.Extensions.AzureIoT
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class PropertyAck
     {
         public int Version { get; set; }
-        public int Status { get; set; } 
+        public int Status { get; set; }
         public string Description { get; set; }
         public string Value { get; set; }
-        
+
         public string BuildAck()
         {
             using (MemoryStream ms = new MemoryStream())
