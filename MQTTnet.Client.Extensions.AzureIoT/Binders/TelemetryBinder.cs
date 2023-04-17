@@ -27,9 +27,12 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
         public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default)
         {
             string topic = $"devices/{_mqttClient.Options.ClientId}/messages/events/" +
-                           $"$.ct={System.Web.HttpUtility.UrlEncode(_serializer.ContentType)}&$.ce={_serializer.ContentEncoding}";
+                           $"$.ct={System.Web.HttpUtility.UrlEncode(_serializer.ContentType)}&" +
+                           $"$.ce={_serializer.ContentEncoding}";
+
             MqttApplicationMessage msg = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
+                .WithContentType(_serializer.ContentType)
                 .WithPayload(_serializer.ToBytes(telemetryMessage.Payload))
                 .WithRetainFlag(false)
                 .WithQualityOfServiceLevel(Protocol.MqttQualityOfServiceLevel.AtMostOnce)

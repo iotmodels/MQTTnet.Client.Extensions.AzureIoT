@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text.Json;
+﻿using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
+using System;
 using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.AzureIoT.Binders
@@ -11,6 +11,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 
         public CommandBinder(IMqttClient c)
         {
+            IMessageSerializer serializer = new Utf8JsonSerializer();
             connection = c;
             _ = connection.SubscribeAsync("$iothub/methods/POST/#");
             connection.ApplicationMessageReceivedAsync += async m =>
@@ -28,12 +29,11 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
                     };
                     if (OnCmdDelegate != null && req != null)
                     {
-                        var tp = TopicParser.ParseTopic(topic);
                         CommandResponse response = await OnCmdDelegate.Invoke(req);
-                        _ = connection.PublishStringAsync($"$iothub/methods/res/{response.Status}/?$rid={tp.Rid}", JsonSerializer.Serialize(response.ReponsePayload));
+                        var tp = TopicParser.ParseTopic(topic);
+                        await connection.PublishBinaryAsync($"$iothub/methods/res/{response.Status}/?$rid={tp.Rid}", serializer.ToBytes(response.ReponsePayload));
                     }
                 }
-                await Task.Yield();
             };
         }
     }

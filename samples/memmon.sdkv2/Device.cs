@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Logging;
-using MQTTnet.Client;
-using MQTTnet;
-
 namespace memmon.device
 {
     public class Device : BackgroundService
@@ -17,8 +13,9 @@ namespace memmon.device
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             string connectionString = _configuration.GetConnectionString("cs")!;
+            _logger.LogWarning("Connecting to {cs}", connectionString ?? "null");
 
-            var deviceClient = await ClientFactory.CreateFromConnectionStringAsync(connectionString, _logger);
+            var deviceClient = await ClientFactory.CreateFromConnectionStringAsync(connectionString!, _logger);
 
             await deviceClient.SetDirectMethodCallbackAsync(async m =>
             {
