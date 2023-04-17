@@ -7,10 +7,10 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class TelemetryBinder
     {
-        IMqttClient _mqttClient;
-        IManagedMqttClient _managedMqttClient;
-        IMessageSerializer _serializer;
-        private readonly bool _telemetryQueueEnabled = false;
+        readonly IMqttClient _mqttClient;
+        readonly IManagedMqttClient _managedMqttClient;
+        readonly IMessageSerializer _serializer;
+        readonly bool _telemetryQueueEnabled = false;
 
         public TelemetryBinder(IMqttClient mqttClient)
         {

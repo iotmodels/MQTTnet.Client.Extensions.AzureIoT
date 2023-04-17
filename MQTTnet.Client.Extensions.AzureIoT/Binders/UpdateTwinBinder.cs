@@ -1,8 +1,10 @@
-﻿namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+﻿using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
+
+namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 {
     public class UpdateTwinBinder<T> : RequestResponseBinder<object, int>
     {
-        public UpdateTwinBinder(IMqttClient c) : base(c)
+        public UpdateTwinBinder(IMqttClient c) : base(c, new Utf8JsonSerializer())
         {
             var rid = RidCounter.NextValue();
             requestTopicPattern = $"$iothub/twin/PATCH/properties/reported/?$rid={rid}";

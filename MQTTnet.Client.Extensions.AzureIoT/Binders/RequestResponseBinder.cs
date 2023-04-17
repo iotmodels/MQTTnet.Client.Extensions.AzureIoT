@@ -22,11 +22,11 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 
         readonly IMessageSerializer _serializer;
 
-        public RequestResponseBinder(IMqttClient client)
-            : this(client, new Utf8JsonSerializer())
-        {
+        //public RequestResponseBinder(IMqttClient client)
+        //    : this(client, new Utf8JsonSerializer())
+        //{
 
-        }
+        //}
 
         public RequestResponseBinder(IMqttClient client, IMessageSerializer serializer)
         {

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdkv2", "samples\mem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdklite", "samples\memmon.sdklite\memmon.sdklite.csproj", "{09DBC282-88AC-4A56-885A-C30747C5C61D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "samples\WindowsFormsApp1\WindowsFormsApp1.csproj", "{B0F40DDC-444E-4D24-AE0A-EE49FB738C4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F40DDC-444E-4D24-AE0A-EE49FB738C4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F40DDC-444E-4D24-AE0A-EE49FB738C4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F40DDC-444E-4D24-AE0A-EE49FB738C4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F40DDC-444E-4D24-AE0A-EE49FB738C4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
