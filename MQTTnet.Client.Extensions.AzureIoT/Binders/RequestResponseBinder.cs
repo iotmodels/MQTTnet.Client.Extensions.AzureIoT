@@ -10,10 +10,10 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
         readonly IMqttClient mqttClient;
         TaskCompletionSource<TResp> tcs;
 
-        protected string requestTopicPattern = "device/{clientId}/commands/{commandName}";
-        protected string responseTopicSub = "device/{clientId}/commands/{commandName}/+";
-        protected string responseTopicSuccess = "device/{clientId}/commands/{commandName}/resp";
-        protected string responseTopicFailure = "device/{clientId}/commands/{commandName}/err";
+        protected string requestTopicPattern = string.Empty; 
+        protected string responseTopicSub = string.Empty; 
+        protected string responseTopicSuccess = string.Empty; 
+        protected string responseTopicFailure = string.Empty; 
         protected bool requireNotEmptyPayload = true;
         string remoteClientId = string.Empty;
         Guid corr = Guid.NewGuid();
