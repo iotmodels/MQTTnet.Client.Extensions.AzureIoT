@@ -13,6 +13,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         private readonly IManagedMqttClient _managedMqttClient = null;
         private readonly bool _telemetryQueueEnabled = false;
 
+        private TelemetryBinder _telemetryBinder;
         private GetTwinBinder _getTwinBinder;
         private UpdateTwinBinder<object> _updateTwinBinder;
         private DesiredUpdatePropertyBinder _desiredUpdateBinder;
@@ -23,6 +24,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         public IotHubDeviceClient(IMqttClient mqttClient)
         {
             _mqttClient = mqttClient;
+            _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new Command(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
@@ -57,6 +59,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         {
             _telemetryQueueEnabled = true;
             _managedMqttClient = mqttClient;
+            _telemetryBinder = new TelemetryBinder(_managedMqttClient);
         }
 
         public IotHubDeviceClient(string connectionString) : this(new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger()))
@@ -68,7 +71,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         {
             var cs = new ConnectionSettings(_connectionString);
             await _mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build(), ct);
-
+            _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new Command(_mqttClient);
             _updateTwinBinder = new UpdateTwinBinder<object>(_mqttClient);
@@ -94,7 +97,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT
         {
             _desiredUpdateBinder.OnProperty_Updated = desired =>
             {
-                
                 userCallback.Invoke(new DesiredProperties(desired));
                 return new PropertyAck() { Value = desired.ToJsonString() };
             };
@@ -108,38 +110,10 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             return twinProps;
         }
 
-        public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default)
-        {
-            if (_telemetryQueueEnabled)
-            {
-                await _managedMqttClient.EnqueueAsync(
-                    new ManagedMqttApplicationMessageBuilder()
-                    .WithApplicationMessage(new MqttApplicationMessageBuilder()
-                        .WithTopic($"devices/{_mqttClient.Options.ClientId}/messages/events/")
-                        .WithPayload(new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload))
-                        .Build())
-                    .Build());
-            }
-            else
-            {
-                if (_mqttClient.IsConnected)
-                {
-                    await _mqttClient.PublishBinaryAsync($"devices/{_mqttClient.Options.ClientId}/messages/events/",
-                      new Utf8JsonSerializer().ToBytes(telemetryMessage.Payload),
-                      Protocol.MqttQualityOfServiceLevel.AtLeastOnce,
-                      false, t);
-                }
-                else
-                {
-                    Trace.TraceWarning("Telemetry lost");
-                }
-            }
-        }
+        public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default) => 
+            await _telemetryBinder.SendTelemetryAsync(telemetryMessage, t);
 
-        public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default)
-        {
-            var twin = await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties._properties, ct);
-            return twin;
-        }
+        public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default) => 
+            await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties._properties, ct);
     }
 }
