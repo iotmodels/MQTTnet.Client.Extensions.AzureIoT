@@ -45,7 +45,7 @@ namespace memmon.device
             int counter = 0;
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Sending Telemetry: {c}", counter++);
+                _logger.LogInformation("Sending Telemetry: {c}", ++counter);
                 await deviceClient.SendTelemetryAsync(new TelemetryMessage(new { counter, Environment.WorkingSet }), stoppingToken);
                 await Task.Delay(1000, stoppingToken);
             }

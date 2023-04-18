@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdkv2", "samples\mem
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "memmon.sdklite", "samples\memmon.sdklite\memmon.sdklite.csproj", "{09DBC282-88AC-4A56-885A-C30747C5C61D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "basic.sdkv1", "samples\basic.sdkv1\basic.sdkv1.csproj", "{FADC494B-E130-4E3B-9C74-A0BB99F19B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09DBC282-88AC-4A56-885A-C30747C5C61D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FADC494B-E130-4E3B-9C74-A0BB99F19B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FADC494B-E130-4E3B-9C74-A0BB99F19B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FADC494B-E130-4E3B-9C74-A0BB99F19B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FADC494B-E130-4E3B-9C74-A0BB99F19B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
