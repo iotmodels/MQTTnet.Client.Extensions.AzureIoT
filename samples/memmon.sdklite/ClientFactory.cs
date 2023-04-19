@@ -21,7 +21,7 @@ namespace memmon.sdklite
         public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync1(string connectionString, ILogger logger, CancellationToken ct = default)
         {
             var mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            //await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithIoTHubConnectionSettings(new IoTHubConnectionSettings(connectionString)).Build());
+            await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithIoTHubConnectionSettings(new IoTHubConnectionSettings(connectionString)).Build());
             var client = new IotHubDeviceClient(mqttClient)
             {
                 ConnectionStatusChangeCallback = c => logger.LogWarning("Connection status changed: {s}", c.Status)

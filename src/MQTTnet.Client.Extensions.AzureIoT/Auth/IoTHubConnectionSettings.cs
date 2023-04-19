@@ -101,7 +101,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Auth
             AppendIfNotEmpty(result, nameof(ModelId), ModelId);
             AppendIfNotEmpty(result, nameof(ClientId), ClientId);
             AppendIfNotEmpty(result, nameof(MqttVersion), MqttVersion.ToString());
-            AppendIfNotEmpty(result, nameof(GatewayHostName), GatewayHostName.ToString());
+            AppendIfNotEmpty(result, nameof(GatewayHostName), GatewayHostName);
             result.Remove(result.Length - 1, 1);
             return result.ToString();
         }
