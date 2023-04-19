@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Connection
+namespace MQTTnet.Client.Extensions.AzureIoT
 {
     public enum ConnectionStatus
     {

@@ -1,5 +1,4 @@
-﻿using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace MQTTnet.Client.Extensions.AzureIoT.Binders

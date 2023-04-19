@@ -1,5 +1,4 @@
 ﻿using MQTTnet.Client.Extensions.AzureIoT.Binders;
-using MQTTnet.Client.Extensions.AzureIoT.Connection;
 using MQTTnet.Extensions.ManagedClient;
 using System;
 using System.Threading;

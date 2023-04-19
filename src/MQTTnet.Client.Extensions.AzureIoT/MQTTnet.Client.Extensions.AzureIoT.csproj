@@ -8,7 +8,11 @@
   <ItemGroup>
     <PackageReference Include="MQTTnet" Version="4.1.4.563" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.1.4.563" />
-    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MQTTnet.Client.Extensions\MQTTnet.Client.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

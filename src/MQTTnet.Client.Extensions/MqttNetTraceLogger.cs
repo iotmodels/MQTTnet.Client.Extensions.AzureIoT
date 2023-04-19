@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Connection
+namespace MQTTnet.Client.Extensions
 {
     public class MqttNetTraceLogger
     {

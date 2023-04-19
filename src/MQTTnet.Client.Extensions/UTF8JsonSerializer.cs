@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer
+namespace MQTTnet.Client.Extensions
 {
     public class Utf8JsonSerializer : IMessageSerializer
     {

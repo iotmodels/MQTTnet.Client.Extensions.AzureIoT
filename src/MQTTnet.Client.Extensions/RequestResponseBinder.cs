@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+namespace MQTTnet.Client.Extensions
 {
-    public class RequestResponseBinder<T, TResp>
+    public abstract class RequestResponseBinder<T, TResp>
     {
         readonly IMqttClient mqttClient;
         TaskCompletionSource<TResp> tcs;
 
-        protected string requestTopicPattern = string.Empty; 
-        protected string responseTopicSub = string.Empty; 
-        protected string responseTopicSuccess = string.Empty; 
-        protected string responseTopicFailure = string.Empty; 
+        protected string requestTopicPattern = string.Empty;
+        protected string responseTopicSub = string.Empty;
+        protected string responseTopicSuccess = string.Empty;
+        protected string responseTopicFailure = string.Empty;
         protected bool requireNotEmptyPayload = true;
         string remoteClientId = string.Empty;
         Guid corr = Guid.NewGuid();

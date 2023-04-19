@@ -1,7 +1,6 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Extensions.AzureIoT.Binders;
-using MQTTnet.Client.Extensions.AzureIoT.Connection;
+using MQTTnet.Client.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 
 namespace memmon.sdklite

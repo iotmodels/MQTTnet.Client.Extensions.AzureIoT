@@ -1,4 +1,4 @@
-﻿namespace MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer
+﻿namespace MQTTnet.Client.Extensions
 {
     public interface IMessageSerializer
     {

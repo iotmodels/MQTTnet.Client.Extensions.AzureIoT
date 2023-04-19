@@ -1,10 +1,10 @@
-﻿using MQTTnet.Client.Extensions.AzureIoT.Connection;
+﻿using MQTTnet.Client.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Connection
+namespace MQTTnet.Client.Extensions
 {
 
     internal static class StringToDictionaryExtension

@@ -1,5 +1,4 @@
-﻿using MQTTnet.Client.Extensions.AzureIoT.Binders.Serializer;
-using MQTTnet.Extensions.ManagedClient;
+﻿using MQTTnet.Extensions.ManagedClient;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -49,13 +48,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
             else
             {
                 await _mqttClient.PublishAsync(msg, t);
-                //if (_mqttClient.IsConnected)
-                //{
-                //}
-                //else
-                //{
-                //    Trace.TraceWarning("Telemetry lost");
-                //}
             }
         }
     }
