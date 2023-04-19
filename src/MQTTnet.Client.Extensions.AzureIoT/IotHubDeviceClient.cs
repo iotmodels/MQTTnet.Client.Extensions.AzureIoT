@@ -43,13 +43,13 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
                 ConnectionStatusChangeCallback?.Invoke(new ConnectionStatusInfo()
                 {
-                    ChangeReason = d.ConnectResult == null ? 
-                        ConnectionStatusChangeReason.DeviceDisabled : 
-                        d.ConnectResult.ResultCode.ToConnectionStatusChangeReason() ,
+                    ChangeReason = d.ConnectResult == null ?
+                        ConnectionStatusChangeReason.DeviceDisabled :
+                        d.ConnectResult.ResultCode.ToConnectionStatusChangeReason(),
                     Status = d.ConnectResult == null ?
                         ConnectionStatus.Disconnected :
                         d.ConnectResult.ResultCode.ToConnectionStatus()
-                }) ;
+                });
                 await Task.Yield();
             };
         }
@@ -108,10 +108,10 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             return twinProps;
         }
 
-        public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default) => 
+        public async Task SendTelemetryAsync(TelemetryMessage telemetryMessage, CancellationToken t = default) =>
             await _telemetryBinder.SendTelemetryAsync(telemetryMessage, t);
 
-        public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default) => 
+        public async Task<long> UpdateReportedPropertiesAsync(ReportedProperties reportedProperties, CancellationToken ct = default) =>
             await _updateTwinBinder.InvokeAsync(_mqttClient.Options.ClientId, reportedProperties._properties, ct);
     }
 }

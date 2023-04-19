@@ -1,5 +1,4 @@
 using memmon.device;
-using System.Diagnostics;
 
 namespace memmon.sdkv2
 {

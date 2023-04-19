@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 namespace MQTTnet.Client.Extensions
 {
 
-    internal static class StringToDictionaryExtension
+    public static class StringToDictionaryExtension
     {
-        internal static IDictionary<string, string> ToDictionary(this string valuePairString, char kvpDelimiter, char kvpSeparator)
+        public static IDictionary<string, string> ToDictionary(this string valuePairString, char kvpDelimiter, char kvpSeparator)
         {
             if (string.IsNullOrWhiteSpace(valuePairString))
             {

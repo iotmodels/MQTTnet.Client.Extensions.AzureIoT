@@ -1,2 +1,2 @@
-﻿global using Microsoft.Azure.Devices.Client;
-global using memmon.sdkv2;
+﻿global using memmon.sdkv2;
+global using Microsoft.Azure.Devices.Client;

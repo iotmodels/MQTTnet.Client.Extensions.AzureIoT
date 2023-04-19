@@ -1,6 +1,7 @@
 ﻿using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Client.Extensions;
+using MQTTnet.Client.Extensions.AzureIoT.Auth;
 using MQTTnet.Extensions.ManagedClient;
 
 namespace memmon.sdklite
@@ -20,7 +21,7 @@ namespace memmon.sdklite
         public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync1(string connectionString, ILogger logger, CancellationToken ct = default)
         {
             var mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(new ConnectionSettings(connectionString)).Build());
+            await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(new IoTHubConnectionSettings(connectionString)).Build());
             var client = new IotHubDeviceClient(mqttClient)
             {
                 ConnectionStatusChangeCallback = c => logger.LogWarning("Connection status changed: {s}", c.Status)
@@ -41,7 +42,7 @@ namespace memmon.sdklite
                     {
                         logger.LogWarning(ex.Message);
                     }
-                }    
+                }
             };
             return client;
         }
@@ -60,7 +61,7 @@ namespace memmon.sdklite
                 tcs.TrySetResult(client);
                 await Task.Yield();
             };
-            var cs = new ConnectionSettings(connectionString);
+            var cs = new IoTHubConnectionSettings(connectionString);
             mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
                 .WithClientOptions(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build())
                 .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))

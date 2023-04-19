@@ -6,20 +6,20 @@ namespace MQTTnet.Client.Extensions
 {
     public abstract class RequestResponseBinder<T, TResp>
     {
-        readonly IMqttClient mqttClient;
-        TaskCompletionSource<TResp> tcs;
+        private readonly IMqttClient mqttClient;
+        private TaskCompletionSource<TResp> tcs;
 
         protected string requestTopicPattern = string.Empty;
         protected string responseTopicSub = string.Empty;
         protected string responseTopicSuccess = string.Empty;
         protected string responseTopicFailure = string.Empty;
         protected bool requireNotEmptyPayload = true;
-        string remoteClientId = string.Empty;
-        Guid corr = Guid.NewGuid();
+        private string remoteClientId = string.Empty;
+        private Guid corr = Guid.NewGuid();
 
         protected Func<string, TResp> VersionExtractor { get; set; }
 
-        readonly IMessageSerializer _serializer;
+        private readonly IMessageSerializer _serializer;
 
         public RequestResponseBinder(IMqttClient client)
             : this(client, new Utf8JsonSerializer())

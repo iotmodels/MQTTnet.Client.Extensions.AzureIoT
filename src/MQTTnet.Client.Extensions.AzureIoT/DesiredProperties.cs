@@ -40,7 +40,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                             {
                                 _properties.Add(el.Name, i);
                                 break;
-                            } 
+                            }
                             else if (el.Value.TryGetInt64(out long l))
                             {
                                 _properties.Add(el.Name, l);
@@ -52,7 +52,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT
                                 break;
                             }
                             break;
-                        
+
                         default:
                             _properties.Add(el.Name, el.Value);
                             break;

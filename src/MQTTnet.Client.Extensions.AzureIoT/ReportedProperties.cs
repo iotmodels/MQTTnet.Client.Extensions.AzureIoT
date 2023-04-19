@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MQTTnet.Client.Extensions.AzureIoT
 {
-    public class ReportedProperties 
+    public class ReportedProperties
     {
         public Dictionary<string, object> _properties { get; set; }
         public ReportedProperties()
@@ -37,6 +37,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             return JsonSerializer.Serialize(_properties);
         }
 
-       
+
     }
 }

@@ -7,14 +7,12 @@ namespace MQTTnet.Client.Extensions
 
     public enum AuthType
     {
-        Sas,
         X509,
         Basic
     }
 
     public class ConnectionSettings
     {
-        private const int Default_SasMinutes = 60;
         private const int Default_KeepAliveInSeconds = 60;
         private const string Default_CleanSession = "true";
         private const int Default_TcpPort = 8883;
@@ -22,19 +20,14 @@ namespace MQTTnet.Client.Extensions
         private const string Default_DisableCrl = "false";
         private const int Default_MqttVersion = 5;
 
-        public string IdScope { get; set; }
         public string HostName { get; set; }
-        public string DeviceId { get; set; }
         public string ClientId { get; set; }
-        public string SharedAccessKey { get; set; }
         public string X509Key { get; set; } //paht-to.pfx|pfxpwd, or thumbprint
         public string ModelId { get; set; }
         public string ModuleId { get; set; }
         public AuthType Auth
         {
-            get => !string.IsNullOrEmpty(X509Key) ? AuthType.X509 :
-                    !string.IsNullOrEmpty(SharedAccessKey) ? AuthType.Sas :
-                        AuthType.Basic;
+            get => !string.IsNullOrEmpty(X509Key) ? AuthType.X509 : AuthType.Basic;
         }
         public int SasMinutes { get; set; }
         public string UserName { get; set; }
@@ -52,7 +45,6 @@ namespace MQTTnet.Client.Extensions
 
         public ConnectionSettings()
         {
-            SasMinutes = Default_SasMinutes;
             TcpPort = Default_TcpPort;
             KeepAliveInSeconds = Default_KeepAliveInSeconds;
             UseTls = Default_UseTls == "true";
@@ -91,15 +83,11 @@ namespace MQTTnet.Client.Extensions
         private void ParseConnectionString(string cs)
         {
             IDictionary<string, string> map = cs.ToDictionary(';', '=');
-            IdScope = GetStringValue(map, nameof(IdScope));
             HostName = GetStringValue(map, nameof(HostName));
-            DeviceId = GetStringValue(map, nameof(DeviceId));
             ClientId = GetStringValue(map, nameof(ClientId));
-            SharedAccessKey = GetStringValue(map, nameof(SharedAccessKey));
             ModuleId = GetStringValue(map, nameof(ModuleId));
             X509Key = GetStringValue(map, nameof(X509Key));
             ModelId = GetStringValue(map, nameof(ModelId));
-            SasMinutes = GetPositiveIntValueOrDefault(map, nameof(SasMinutes), Default_SasMinutes);
             UserName = GetStringValue(map, nameof(UserName));
             Password = GetStringValue(map, nameof(Password));
             KeepAliveInSeconds = GetPositiveIntValueOrDefault(map, nameof(KeepAliveInSeconds), Default_KeepAliveInSeconds);
@@ -136,10 +124,7 @@ namespace MQTTnet.Client.Extensions
             var result = new StringBuilder();
             AppendIfNotEmpty(result, nameof(HostName), HostName);
             AppendIfNotEmpty(result, nameof(TcpPort), TcpPort.ToString());
-            AppendIfNotEmpty(result, nameof(DeviceId), DeviceId);
-            AppendIfNotEmpty(result, nameof(IdScope), IdScope);
             AppendIfNotEmpty(result, nameof(ModuleId), ModuleId);
-            AppendIfNotEmpty(result, nameof(SharedAccessKey), SharedAccessKey);
             AppendIfNotEmpty(result, nameof(UserName), UserName);
             AppendIfNotEmpty(result, nameof(X509Key), X509Key);
             AppendIfNotEmpty(result, nameof(ModelId), ModelId);
