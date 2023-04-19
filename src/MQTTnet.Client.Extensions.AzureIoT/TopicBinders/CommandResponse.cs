@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
 {
     public class CommandResponse
     {

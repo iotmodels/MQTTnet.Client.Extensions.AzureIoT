@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Threading;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
 {
     [DebuggerStepThrough()]
     internal static class RidCounter

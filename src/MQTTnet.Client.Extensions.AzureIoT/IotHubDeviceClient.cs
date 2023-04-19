@@ -1,4 +1,5 @@
-﻿using MQTTnet.Client.Extensions.AzureIoT.Binders;
+﻿using MQTTnet.Client.Extensions.AzureIoT.Auth;
+using MQTTnet.Client.Extensions.AzureIoT.TopicBinders;
 using MQTTnet.Extensions.ManagedClient;
 using System;
 using System.Threading;
@@ -22,6 +23,9 @@ namespace MQTTnet.Client.Extensions.AzureIoT
 
         public IotHubDeviceClient(IMqttClient mqttClient)
         {
+            if (mqttClient == null) throw new ArgumentNullException(nameof(mqttClient));
+            if (mqttClient.IsConnected == false) throw new ArgumentException("MqttClient not connected");
+
             _mqttClient = mqttClient;
             _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
@@ -60,15 +64,16 @@ namespace MQTTnet.Client.Extensions.AzureIoT
             _telemetryBinder = new TelemetryBinder(_managedMqttClient);
         }
 
-        public IotHubDeviceClient(string connectionString) : this(new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger()))
+        public IotHubDeviceClient(string connectionString)
         {
+            _mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
             _connectionString = connectionString;
         }
 
         public async Task OpenAsync(CancellationToken ct = default)
         {
-            var cs = new ConnectionSettings(_connectionString);
-            await _mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build(), ct);
+            IoTHubConnectionSettings cs = new IoTHubConnectionSettings(_connectionString);
+            await _mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithIoTHubConnectionSettings(cs).Build(), ct);
             _telemetryBinder = new TelemetryBinder(_mqttClient);
             _getTwinBinder = new GetTwinBinder(_mqttClient);
             _commandBinder = new CommandBinder(_mqttClient);

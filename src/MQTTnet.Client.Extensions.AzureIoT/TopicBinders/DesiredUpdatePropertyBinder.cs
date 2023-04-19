@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
 {
     public class DesiredUpdatePropertyBinder
     {

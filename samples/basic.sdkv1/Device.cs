@@ -32,7 +32,7 @@ namespace basic.sdkv1
             {
                 _logger.LogInformation("Prop received: {c} with payload {p}", dcb.Version, dcb.ToJson());
                 await Task.Yield();
-            }, null);
+            }, null, stoppingToken);
 
             var twin = await deviceClient.GetTwinAsync(stoppingToken);
             _logger.LogInformation("twin reported version: {r}. desired version {d}", twin.Properties.Reported.Version, twin.Properties.Desired.Version);
@@ -58,7 +58,7 @@ namespace basic.sdkv1
                 };
 
 
-                await deviceClient.SendEventAsync(msg);
+                await deviceClient.SendEventAsync(msg, stoppingToken);
                 await Task.Delay(1000, stoppingToken);
             }
         }

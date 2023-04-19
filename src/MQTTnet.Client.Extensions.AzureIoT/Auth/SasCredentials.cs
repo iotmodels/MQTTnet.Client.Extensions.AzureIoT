@@ -2,7 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MQTTnet.Client.Extensions
+namespace MQTTnet.Client.Extensions.AzureIoT.Auth
 {
     public class SasCredentials : IMqttClientCredentialsProvider
     {

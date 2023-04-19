@@ -4,7 +4,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Auth
 {
     public static partial class MqttNetExtensions
     {
-        public static MqttClientOptionsBuilder WithConnectionSettings(this MqttClientOptionsBuilder builder, IoTHubConnectionSettings cs)
+        public static MqttClientOptionsBuilder WithIoTHubConnectionSettings(this MqttClientOptionsBuilder builder, IoTHubConnectionSettings cs)
         {
             builder
                 .WithTcpServer(cs.HostName, cs.TcpPort)

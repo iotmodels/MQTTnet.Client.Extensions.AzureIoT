@@ -23,13 +23,11 @@ namespace MQTTnet.Client.Extensions
         public string HostName { get; set; }
         public string ClientId { get; set; }
         public string X509Key { get; set; } //paht-to.pfx|pfxpwd, or thumbprint
-        public string ModelId { get; set; }
-        public string ModuleId { get; set; }
+        
         public AuthType Auth
         {
             get => !string.IsNullOrEmpty(X509Key) ? AuthType.X509 : AuthType.Basic;
         }
-        public int SasMinutes { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public int KeepAliveInSeconds { get; set; }
@@ -38,8 +36,6 @@ namespace MQTTnet.Client.Extensions
         public bool UseTls { get; set; }
         public string CaFile { get; set; }
         public bool DisableCrl { get; set; }
-
-        public string GatewayHostName { get; set; }
 
         public int? MqttVersion { get; set; }
 
@@ -50,7 +46,6 @@ namespace MQTTnet.Client.Extensions
             UseTls = Default_UseTls == "true";
             DisableCrl = Default_DisableCrl == "true";
             CleanSession = Default_CleanSession == "true";
-            GatewayHostName = string.Empty;
             MqttVersion = Default_MqttVersion;
         }
 
@@ -80,14 +75,12 @@ namespace MQTTnet.Client.Extensions
             return result;
         }
 
-        private void ParseConnectionString(string cs)
+        protected void ParseConnectionString(string cs)
         {
             IDictionary<string, string> map = cs.ToDictionary(';', '=');
             HostName = GetStringValue(map, nameof(HostName));
             ClientId = GetStringValue(map, nameof(ClientId));
-            ModuleId = GetStringValue(map, nameof(ModuleId));
             X509Key = GetStringValue(map, nameof(X509Key));
-            ModelId = GetStringValue(map, nameof(ModelId));
             UserName = GetStringValue(map, nameof(UserName));
             Password = GetStringValue(map, nameof(Password));
             KeepAliveInSeconds = GetPositiveIntValueOrDefault(map, nameof(KeepAliveInSeconds), Default_KeepAliveInSeconds);
@@ -96,7 +89,6 @@ namespace MQTTnet.Client.Extensions
             UseTls = GetStringValue(map, nameof(UseTls), Default_UseTls) == "true";
             CaFile = GetStringValue(map, nameof(CaFile));
             DisableCrl = GetStringValue(map, nameof(DisableCrl), Default_DisableCrl) == "true";
-            GatewayHostName = GetStringValue(map, nameof(GatewayHostName));
             MqttVersion = GetPositiveIntValueOrDefault(map, nameof(MqttVersion), Default_MqttVersion);
             if (MqttVersion != 3 && MqttVersion != 5)
             {
@@ -124,14 +116,11 @@ namespace MQTTnet.Client.Extensions
             var result = new StringBuilder();
             AppendIfNotEmpty(result, nameof(HostName), HostName);
             AppendIfNotEmpty(result, nameof(TcpPort), TcpPort.ToString());
-            AppendIfNotEmpty(result, nameof(ModuleId), ModuleId);
             AppendIfNotEmpty(result, nameof(UserName), UserName);
             AppendIfNotEmpty(result, nameof(X509Key), X509Key);
-            AppendIfNotEmpty(result, nameof(ModelId), ModelId);
             AppendIfNotEmpty(result, nameof(ClientId), ClientId);
             AppendIfNotEmpty(result, nameof(Auth), Auth.ToString());
             AppendIfNotEmpty(result, nameof(MqttVersion), MqttVersion.ToString());
-            AppendIfNotEmpty(result, nameof(GatewayHostName), GatewayHostName.ToString());
             result.Remove(result.Length - 1, 1);
             return result.ToString();
         }

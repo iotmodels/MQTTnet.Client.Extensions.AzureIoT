@@ -8,7 +8,7 @@ namespace memmon.sdklite
 {
     internal static class ClientFactory
     {
-        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync0(string connectionString, ILogger logger)
+        public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync(string connectionString, ILogger logger)
         {
             var client = new IotHubDeviceClient(connectionString)
             {
@@ -21,7 +21,7 @@ namespace memmon.sdklite
         public static async Task<IotHubDeviceClient> CreateFromConnectionStringAsync1(string connectionString, ILogger logger, CancellationToken ct = default)
         {
             var mqttClient = new MqttFactory().CreateMqttClient(MqttNetTraceLogger.CreateTraceLogger());
-            await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithConnectionSettings(new IoTHubConnectionSettings(connectionString)).Build());
+            //await mqttClient.ConnectAsync(new MqttClientOptionsBuilder().WithIoTHubConnectionSettings(new IoTHubConnectionSettings(connectionString)).Build());
             var client = new IotHubDeviceClient(mqttClient)
             {
                 ConnectionStatusChangeCallback = c => logger.LogWarning("Connection status changed: {s}", c.Status)
@@ -48,7 +48,7 @@ namespace memmon.sdklite
         }
 
 
-        public static Task<IotHubDeviceClient> CreateFromConnectionStringAsync(string connectionString, ILogger logger)
+        public static Task<IotHubDeviceClient> CreateFromConnectionStringAsync2(string connectionString, ILogger logger)
         {
             var mqttClient = new MqttFactory().CreateManagedMqttClient(MqttNetTraceLogger.CreateTraceLogger());
             var tcs = new TaskCompletionSource<IotHubDeviceClient>();
@@ -63,7 +63,7 @@ namespace memmon.sdklite
             };
             var cs = new IoTHubConnectionSettings(connectionString);
             mqttClient.StartAsync(new ManagedMqttClientOptionsBuilder()
-                .WithClientOptions(new MqttClientOptionsBuilder().WithConnectionSettings(cs).Build())
+                .WithClientOptions(new MqttClientOptionsBuilder().WithIoTHubConnectionSettings(cs).Build())
                 .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                 .Build());
             return tcs.Task.TimeoutAfter(TimeSpan.FromSeconds(30));

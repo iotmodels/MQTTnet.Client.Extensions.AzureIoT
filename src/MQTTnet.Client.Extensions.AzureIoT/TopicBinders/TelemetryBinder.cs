@@ -2,14 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MQTTnet.Client.Extensions.AzureIoT.Binders
+namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
 {
     public class TelemetryBinder
     {
         private readonly IMqttClient _mqttClient;
         private readonly IManagedMqttClient _managedMqttClient;
         private readonly IMessageSerializer _serializer;
-        private readonly bool _telemetryQueueEnabled = false;
 
         public TelemetryBinder(IMqttClient mqttClient)
         {
@@ -19,7 +18,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
 
         public TelemetryBinder(IManagedMqttClient managedMqttClient) : this(managedMqttClient.InternalClient)
         {
-            _telemetryQueueEnabled = true;
             _managedMqttClient = managedMqttClient;
         }
 
@@ -37,7 +35,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Binders
                 .WithQualityOfServiceLevel(Protocol.MqttQualityOfServiceLevel.AtMostOnce)
                 .Build();
 
-            if (_telemetryQueueEnabled)
+            if (_managedMqttClient != null)
             {
                 ManagedMqttApplicationMessage mmsg = new ManagedMqttApplicationMessageBuilder()
                     .WithApplicationMessage(msg)
