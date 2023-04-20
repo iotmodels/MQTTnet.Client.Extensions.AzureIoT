@@ -5,7 +5,7 @@
       "dotnetRunMessages": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
-        "ConnectionStrings__cs": "Hostname=tests.azure-devices.net;DeviceId=sdkv2;SharedAccessKey=MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA="
+        "ConnectionStrings__cs": "HostName=e4k-hub.azure-devices.net;DeviceId=testconnects;SharedAccessKey=faXk+K78QR+F8jyDcq+QGb1OeMU8j7/RPScZ+PAHk80="
       }
     }
   }
