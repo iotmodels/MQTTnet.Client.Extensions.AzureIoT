@@ -12,20 +12,12 @@ namespace MQTTnet.Client.Extensions.UnitTests
             var dcs = new IoTHubConnectionSettings();
             Assert.Equal(60, dcs.SasMinutes);
             Assert.Equal(60, dcs.KeepAliveInSeconds);
-            Assert.Equal(AuthType.Basic, dcs.Auth);
             Assert.Equal(8883, dcs.TcpPort);
             Assert.False(dcs.DisableCrl);
             Assert.True(dcs.UseTls);
             Assert.Equal("TcpPort=8883;MqttVersion=5", dcs.ToString());
         }
 
-        [Fact]
-        public void GetAuthType()
-        {
-            Assert.Equal(AuthType.X509, new IoTHubConnectionSettings { X509Key = "key" }.Auth);
-            //Assert.Equal(AuthType.Sas, new IoTHubConnectionSettings { SharedAccessKey = "key" }.Auth);
-            Assert.Equal(AuthType.Basic, new IoTHubConnectionSettings { }.Auth);
-        }
 
         //[Fact]
         //public void InferClientIdFromUserName()
@@ -140,12 +132,54 @@ namespace MQTTnet.Client.Extensions.UnitTests
                 IoTHubConnectionSettings dcs = new(cs);
                 Assert.Fail("should throw");
             }
-            catch (ApplicationException ex)
+            catch (FormatException ex)
             {
-                Assert.Equal("Invalid Mqtt Version 4", ex.Message);
+                Assert.Equal("Invalid ConnectionSettings: Mqtt Version 4 not supported, should be '3' or '5'", ex.Message);
 
             }
+        }
 
+        [Fact]
+        public void HostNameIsMandatory()
+        {
+            string cs = "DeviceId=<deviceId>;SharedAccessKey=<SasKey>";
+            try
+            {
+                IoTHubConnectionSettings dcs = new(cs);
+                Assert.Fail("should throw");
+            }
+            catch (FormatException ex)
+            {
+                Assert.Equal("Invalid ConnectionSettings: HostName is mandatory", ex.Message);
+            }
+        }
+
+        [Fact]
+        public void EmptyStringTrhows()
+        {
+            try
+            {
+                var cs = new ConnectionSettings("");
+                Assert.Fail("should throw");
+            }
+            catch (FormatException ex)
+            {
+                Assert.Equal("Invalid ConnectionSettings: HostName is mandatory", ex.Message);
+            }
+        }
+
+        [Fact]
+        public void HubConnectionWithKeyFiles()
+        {
+            try
+            {
+                var cs = new IoTHubConnectionSettings("HostName=<hubname>.azure-devices.net;DeviceId=<deviceId>");
+                Assert.Fail("should throw");
+            }
+            catch (FormatException ex)
+            {
+                Assert.Equal("Invalid ConnectionSettings: SharedAccessKey or X509Key must be set", ex.Message);
+            }
         }
     }
 }

@@ -4,13 +4,6 @@ using System.Text;
 
 namespace MQTTnet.Client.Extensions
 {
-
-    public enum AuthType
-    {
-        X509,
-        Basic
-    }
-
     public class ConnectionSettings
     {
         private const int Default_KeepAliveInSeconds = 60;
@@ -24,10 +17,6 @@ namespace MQTTnet.Client.Extensions
         public string ClientId { get; set; }
         public string X509Key { get; set; } //paht-to.pfx|pfxpwd, or thumbprint
         
-        public AuthType Auth
-        {
-            get => !string.IsNullOrEmpty(X509Key) ? AuthType.X509 : AuthType.Basic;
-        }
         public string UserName { get; set; }
         public string Password { get; set; }
         public int KeepAliveInSeconds { get; set; }
@@ -90,10 +79,29 @@ namespace MQTTnet.Client.Extensions
             CaFile = GetStringValue(map, nameof(CaFile));
             DisableCrl = GetStringValue(map, nameof(DisableCrl), Default_DisableCrl) == "true";
             MqttVersion = GetPositiveIntValueOrDefault(map, nameof(MqttVersion), Default_MqttVersion);
+            if (Validate( out string msg) == false)
+            {
+                throw new FormatException($"Invalid ConnectionSettings: {msg}");
+            }
+        }
+
+        private bool Validate(out string validationMessage)
+        {
+            validationMessage = string.Empty;
+
             if (MqttVersion != 3 && MqttVersion != 5)
             {
-                throw new ApplicationException($"Invalid Mqtt Version {MqttVersion}", null);
+                validationMessage = $"Mqtt Version {MqttVersion} not supported, should be '3' or '5'";
+                return false;
             }
+
+            if (string.IsNullOrEmpty(HostName))
+            {
+                validationMessage = "HostName is mandatory";
+                return false;
+            }
+
+            return true;
         }
 
         private static void AppendIfNotEmpty(StringBuilder sb, string name, string val)
@@ -119,7 +127,6 @@ namespace MQTTnet.Client.Extensions
             AppendIfNotEmpty(result, nameof(UserName), UserName);
             AppendIfNotEmpty(result, nameof(X509Key), X509Key);
             AppendIfNotEmpty(result, nameof(ClientId), ClientId);
-            AppendIfNotEmpty(result, nameof(Auth), Auth.ToString());
             AppendIfNotEmpty(result, nameof(MqttVersion), MqttVersion.ToString());
             result.Remove(result.Length - 1, 1);
             return result.ToString();

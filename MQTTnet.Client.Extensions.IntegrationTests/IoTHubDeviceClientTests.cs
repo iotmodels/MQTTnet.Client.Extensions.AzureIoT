@@ -1,7 +1,6 @@
 using MQTTnet.Adapter;
 using MQTTnet.Client.Extensions.AzureIoT;
 using MQTTnet.Client.Extensions.AzureIoT.Auth;
-using System.Net.NetworkInformation;
 using System.Text;
 
 namespace MQTTnet.Client.Extensions.IntegrationTests

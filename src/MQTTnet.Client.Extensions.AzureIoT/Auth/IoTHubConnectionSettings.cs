@@ -16,12 +16,6 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Auth
 
         public string SharedAccessKey { get; set; }
         
-        //public AuthType Auth
-        //{
-        //    get => !string.IsNullOrEmpty(X509Key) ? AuthType.X509 :
-        //            !string.IsNullOrEmpty(SharedAccessKey) ? AuthType.Sas :
-        //                AuthType.Basic;
-        //}
         public int SasMinutes { get; set; }
         
         public string GatewayHostName { get; set; }
@@ -70,7 +64,23 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Auth
             ModelId = GetStringValue(map, nameof(ModelId));
             SasMinutes = GetPositiveIntValueOrDefault(map, nameof(SasMinutes), Default_SasMinutes);
             GatewayHostName = GetStringValue(map, nameof(GatewayHostName));
+            if (Validate(out string msg) == false)
+            {
+                throw new FormatException($"Invalid ConnectionSettings: {msg}");
+            }
         }
+        private bool Validate(out string validationMessage)
+        {
+            validationMessage = string.Empty;
+            if (string.IsNullOrEmpty(SharedAccessKey) && string.IsNullOrEmpty(X509Key))
+            {
+                validationMessage = "SharedAccessKey or X509Key must be set";
+                return false;
+            }
+            return true;
+        }
+
+
 
         private static void AppendIfNotEmpty(StringBuilder sb, string name, string val)
         {
