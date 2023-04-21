@@ -1,7 +1,4 @@
 using memmon.device;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Extensions.ManagedClient;
 
 namespace memmon.sdklite
 {
@@ -19,6 +16,6 @@ namespace memmon.sdklite
             host.Run();
         }
 
-       
+
     }
 }

@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MQTTnet.Client.Extensions.AzureIoT\MQTTnet.Client.Extensions.AzureIoT.csproj" />
+    <ProjectReference Include="..\..\src\MQTTnet.Client.Extensions.AzureIoT\MQTTnet.Client.Extensions.AzureIoT.csproj" />
   </ItemGroup>
 </Project>

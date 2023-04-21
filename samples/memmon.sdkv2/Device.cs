@@ -33,8 +33,10 @@ namespace memmon.device
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.Version, twin.Desired.Version);
             _logger.LogInformation("twin reported: {r}, desired: {d}", twin.Reported.GetSerializedString(), twin.Desired.GetSerializedString());
 
-            var reportedProperties = new ReportedProperties();
-            reportedProperties["started"] = DateTime.UtcNow;
+            var reportedProperties = new ReportedProperties
+            {
+                ["started"] = DateTime.UtcNow
+            };
             var v = await deviceClient.UpdateReportedPropertiesAsync(reportedProperties, stoppingToken);
             _logger.LogInformation("updated started to: {v}", v);
 

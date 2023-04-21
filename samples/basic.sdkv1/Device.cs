@@ -18,21 +18,21 @@ namespace basic.sdkv1
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             var deviceClient = DeviceClient.CreateFromConnectionString(_configuration.GetConnectionString("cs"), TransportType.Mqtt);
-            deviceClient.SetConnectionStatusChangesHandler( (c, r) => 
+            deviceClient.SetConnectionStatusChangesHandler((c, r) =>
             {
                 _logger.LogWarning("Connection changed {c}, {r}", c, r);
             });
-            await deviceClient.SetMethodDefaultHandlerAsync( async (mcb, ctx) => 
+            await deviceClient.SetMethodDefaultHandlerAsync(async (mcb, ctx) =>
             {
                 _logger.LogInformation("Cmd received: {c} with payload {p}", mcb.Name, mcb.DataAsJson);
                 return await Task.FromResult(new MethodResponse(Encoding.UTF8.GetBytes("cmd ok"), 200));
             }, null);
 
-            await deviceClient.SetDesiredPropertyUpdateCallbackAsync(async (dcb, ctx) => 
+            await deviceClient.SetDesiredPropertyUpdateCallbackAsync(async (dcb, ctx) =>
             {
                 _logger.LogInformation("Prop received: {c} with payload {p}", dcb.Version, dcb.ToJson());
                 await Task.Yield();
-            }, null);
+            }, null, stoppingToken);
 
             var twin = await deviceClient.GetTwinAsync(stoppingToken);
             _logger.LogInformation("twin reported version: {r}. desired version {d}", twin.Properties.Reported.Version, twin.Properties.Desired.Version);
@@ -51,14 +51,14 @@ namespace basic.sdkv1
             {
                 _logger.LogInformation("Sending Telemetry: {c}", ++counter);
 
-                var msg = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { counter, Environment.WorkingSet})))
+                var msg = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new { counter, Environment.WorkingSet })))
                 {
                     ContentEncoding = "utf-8",
                     ContentType = "application/json"
                 };
 
 
-                await deviceClient.SendEventAsync(msg);
+                await deviceClient.SendEventAsync(msg, stoppingToken);
                 await Task.Delay(1000, stoppingToken);
             }
         }
