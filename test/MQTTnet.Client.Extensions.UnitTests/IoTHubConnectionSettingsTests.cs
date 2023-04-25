@@ -169,7 +169,7 @@ namespace MQTTnet.Client.Extensions.UnitTests
         }
 
         [Fact]
-        public void HubConnectionWithKeyFiles()
+        public void HubConnectionWithoutKeyFails()
         {
             try
             {
