@@ -68,10 +68,10 @@ namespace MQTTnet.Client.Extensions
 
             MqttApplicationMessageBuilder msgBuilder= new MqttApplicationMessageBuilder()
                 .WithTopic(commandTopic)
-                .WithResponseTopic(responseTopicSuccess.Replace("{clientId}", remoteClientId))
-                .WithCorrelationData(corr.ToByteArray())
+                //.WithResponseTopic(responseTopicSuccess.Replace("{clientId}", remoteClientId))
+                //.WithCorrelationData(corr.ToByteArray())
                 .WithPayload(_serializer.ToBytes(request));
-                
+
             var pubAck = await mqttClient.PublishAsync(msgBuilder.Build());
             if (!pubAck.IsSuccess)
             {

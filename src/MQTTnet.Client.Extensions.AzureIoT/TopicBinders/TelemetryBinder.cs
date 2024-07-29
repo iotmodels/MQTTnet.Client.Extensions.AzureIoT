@@ -29,7 +29,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
 
             MqttApplicationMessage msg = new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                .WithContentType(_serializer.ContentType)
+                //.WithContentType(_serializer.ContentType)
                 .WithPayload(_serializer.ToBytes(telemetryMessage.Payload))
                 .WithRetainFlag(false)
                 .WithQualityOfServiceLevel(Protocol.MqttQualityOfServiceLevel.AtMostOnce)
