@@ -18,7 +18,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.TopicBinders
                  var topic = m.ApplicationMessage.Topic;
                  if (topic.StartsWith("$iothub/twin/PATCH/properties/desired"))
                  {
-                     string msg = Encoding.UTF8.GetString(m.ApplicationMessage.Payload);
+                     string msg = Encoding.UTF8.GetString(m.ApplicationMessage.PayloadSegment.Array);
                      JsonNode desired = JsonNode.Parse(msg);
 
                      if (desired != null)

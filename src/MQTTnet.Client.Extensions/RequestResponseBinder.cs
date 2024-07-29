@@ -44,7 +44,7 @@ namespace MQTTnet.Client.Extensions
 
                     if (requireNotEmptyPayload)
                     {
-                        TResp resp = _serializer.FromBytes<TResp>(m.ApplicationMessage.Payload);
+                        TResp resp = _serializer.FromBytes<TResp>(m.ApplicationMessage.PayloadSegment.Array);
                         tcs.SetResult(resp);
                     }
                     else
@@ -66,14 +66,13 @@ namespace MQTTnet.Client.Extensions
             var responseTopic = responseTopicSub.Replace("{clientId}", remoteClientId);
             await mqttClient.SubscribeAsync(responseTopic, Protocol.MqttQualityOfServiceLevel.AtMostOnce, ct);
 
-            MqttApplicationMessage msg = new MqttApplicationMessage()
-            {
-                Topic = commandTopic,
-                Payload = _serializer.ToBytes(request),
-                ResponseTopic = responseTopicSuccess.Replace("{clientId}", remoteClientId),
-                CorrelationData = corr.ToByteArray()
-            };
-            var pubAck = await mqttClient.PublishAsync(msg);
+            MqttApplicationMessageBuilder msgBuilder= new MqttApplicationMessageBuilder()
+                .WithTopic(commandTopic)
+                .WithResponseTopic(responseTopicSuccess.Replace("{clientId}", remoteClientId))
+                .WithCorrelationData(corr.ToByteArray())
+                .WithPayload(_serializer.ToBytes(request));
+                
+            var pubAck = await mqttClient.PublishAsync(msgBuilder.Build());
             if (!pubAck.IsSuccess)
             {
                 throw new ApplicationException("Error publishing Request Message");

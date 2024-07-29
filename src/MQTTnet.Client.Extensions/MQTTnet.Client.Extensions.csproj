@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MQTTnet" Version="4.1.4.563" />
-	  <PackageReference Include="System.Text.Json" Version="8.0" />
+    <PackageReference Include="MQTTnet" Version="4.3.6.*" />
+	  <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 
 </Project>

@@ -11,10 +11,7 @@ namespace MQTTnet.Client.Extensions.AzureIoT.Auth
                 .WithCredentials(new SasCredentials(cs.HostName, cs.DeviceId, cs.SharedAccessKey, cs.SasMinutes, cs.ModelId))
                 .WithClientId(cs.DeviceId)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(cs.KeepAliveInSeconds))
-                .WithTls(new MqttClientOptionsBuilderTlsParameters()
-                {
-                    UseTls = cs.UseTls
-                });
+                .WithTlsOptions(new MqttClientTlsOptionsBuilder().Build());
             return builder;
         }
     }

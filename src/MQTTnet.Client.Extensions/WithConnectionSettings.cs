@@ -12,7 +12,7 @@ namespace MQTTnet.Client.Extensions
                 .WithClientId(cs.ClientId)
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(cs.KeepAliveInSeconds))
                 .WithCleanSession(cs.CleanSession)
-                .WithTls(new MqttClientOptionsBuilderTlsParameters()    
+                .WithTlsOptions(new MqttClientTlsOptions()    
                 {
                     UseTls = cs.UseTls
                 });
