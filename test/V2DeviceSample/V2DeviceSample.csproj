@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="2.0.0-preview004" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="0.01" />
   </ItemGroup>
 
   <ItemGroup>
